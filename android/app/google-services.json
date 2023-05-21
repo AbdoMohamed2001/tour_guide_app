@@ -1,0 +1,82 @@
+{
+  "project_info": {
+    "project_number": "713411697629",
+    "project_id": "tour-guide-a65e8",
+    "storage_bucket": "tour-guide-a65e8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:713411697629:android:6b4813a7c8b7842ccef434",
+        "android_client_info": {
+          "package_name": "com.example.chatapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "713411697629-pr0bpm0ht87hb068jm91js2oki1o5s53.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAJa0q6GTDJ-ObQtovBpRDwDQaIAWlgn7s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "713411697629-pr0bpm0ht87hb068jm91js2oki1o5s53.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "713411697629-qvsl9pa4isl67qifq4frmndfggqrjd93.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.tourguideapp"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:713411697629:android:2c60b548a31e5a8bcef434",
+        "android_client_info": {
+          "package_name": "com.example.tourguideapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "713411697629-pr0bpm0ht87hb068jm91js2oki1o5s53.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAJa0q6GTDJ-ObQtovBpRDwDQaIAWlgn7s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "713411697629-pr0bpm0ht87hb068jm91js2oki1o5s53.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "713411697629-qvsl9pa4isl67qifq4frmndfggqrjd93.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.tourguideapp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
