@@ -1,7 +1,7 @@
 import 'package:TourGuideApp/components.dart';
 import 'package:TourGuideApp/constants.dart';
 import 'package:TourGuideApp/screens/homePage/all_cities_screen.dart';
-import 'package:TourGuideApp/screens/place_screen.dart';
+import 'package:TourGuideApp/screens/places/place_screen.dart';
 import 'package:TourGuideApp/screens/servicesProvider/services_provider_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -24,16 +24,12 @@ class HomePageNavBar extends StatelessWidget {
   @override
   Widget build(BuildContext context)  {
     CollectionReference citiesCollection = FirebaseFirestore.instance
-        .collection('cities');
+        .collection('cities').doc('1OILZtcN2KjarkB4g04L').collection('Places');
     return FutureBuilder<QuerySnapshot>(
 
       future: citiesCollection.get(),
         builder: (context,snapshot){
-          var allDocs = snapshot.data?.docs.map((doc) {
-            var hotelCollection = doc.reference.collection('hotels');
-            var placeCollection = doc.reference.collection('place');
-            var cafeCollection = doc.reference.collection('Cafe');
-          });
+          final List<QueryDocumentSnapshot>? allDocs = snapshot.data?.docs;
           if(allDocs==null) {Center(child: CircularProgressIndicator(
             color: Colors.orange,
           ));}
@@ -241,9 +237,10 @@ class HomePageNavBar extends StatelessWidget {
                                   children: [
                                     ClipRRect(
                                       borderRadius: BorderRadius.circular(10),
-                                      child: const Image(
+                                      child:  Image(
                                         image: NetworkImage(
-                                          'https://cdn.mos.cms.futurecdn.net/YMa7Wx2FyjQFUjEeqa72Rm-1200-80.jpg',
+                                          allDocs[index]['Imageurl'],
+                                          // 'https://cdn.mos.cms.futurecdn.net/YMa7Wx2FyjQFUjEeqa72Rm-1200-80.jpg',
                                         ),
                                         fit: BoxFit.cover,
                                         height: 100,
@@ -261,9 +258,9 @@ class HomePageNavBar extends StatelessWidget {
                                             .spaceBetween,
                                         children: [
                                           Column(
-                                            children: const [
+                                            children:  [
                                               Text(
-                                                'Pyramids',
+                                                allDocs[index]['Name'],
                                                 style: TextStyle(
                                                     fontSize: 18,
                                                     fontWeight: FontWeight.bold),
@@ -271,7 +268,7 @@ class HomePageNavBar extends StatelessWidget {
                                               SizedBox(
                                                 height: 5,
                                               ),
-                                              Text('Giza'),
+                                              Text(allDocs[index]['cityName']),
                                               SizedBox(
                                                 height: 20,
                                               )

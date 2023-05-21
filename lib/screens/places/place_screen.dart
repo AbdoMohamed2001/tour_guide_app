@@ -1,20 +1,48 @@
 import 'package:TourGuideApp/components.dart';
 import 'package:TourGuideApp/constants.dart';
+import 'package:TourGuideApp/models/hotel_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class MosqueScreen extends StatelessWidget {
-  MosqueScreen({
+class PlacePage extends StatefulWidget {
+  static String id = 'placeScreen';
+  List<QueryDocumentSnapshot>? placeData;
+  int? currentIndex;
+
+  PlacePage({
     Key? key,
-    required this.mosqueData,
-    required this.currentIndex
-  }
-      ) : super(key: key);
-  List<QueryDocumentSnapshot> mosqueData;
-  int currentIndex;
+    this.placeData,
+    this.currentIndex,
+  }) : super(key: key);
+
   @override
+  State<PlacePage> createState() => _PlacePageState();
+}
+
+class _PlacePageState extends State<PlacePage> {
+  bool isFavourite = false;
+  bool isRated = false;
+  Color color = Colors.white;
+  Color isRatedColor = Colors.black;
+late String imageUrl;
+final storage = FirebaseStorage.instance;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    imageUrl='';
+    getImageUrl();
+  }
+  Future<void> getImageUrl() async {
+      final ref = storage.ref().child('/cairo/places/Abdeen palace/IMG_4329.jpeg');
+      final url = await ref.getDownloadURL();
+      setState(() {
+        imageUrl=url;
+      });
+  }
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
@@ -32,43 +60,35 @@ class MosqueScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              //Image
+//Image
               CustomImage(
-                imagesLength: mosqueData.length.toString(),
+                imagesLength: widget.placeData!.length.toString(),
                 fontSize: 28,
-                imageUrl: mosqueData[currentIndex]['Imageurl'],
-                endImageUrl:
-                'https://media.architecturaldigest.com/photos/58e2a407c0e88d1a6a20066b/16:9/w_1280,c_limit/Pyramid%20of%20Giza%201.jpg',
-                itemName: mosqueData[currentIndex]['Name'],
-                itemLocation: mosqueData[currentIndex]['cityName'],
+                imageUrl: widget.placeData![widget.currentIndex!]['Imageurl'],
+                endImageUrl: imageUrl,
+                    // 'https://media.architecturaldigest.com/photos/58e2a407c0e88d1a6a20066b/16:9/w_1280,c_limit/Pyramid%20of%20Giza%201.jpg',
+                itemName: widget.placeData![widget.currentIndex!]['Name'],
+                itemLocation: widget.placeData![widget.currentIndex!]
+                    ['cityName'],
               ),
               kSizedBox,
+              //Description and Rate Row
               Padding(
                 padding: const EdgeInsets.only(right: 8.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          width : 220,
-                          child: Text(
-                            mosqueData[currentIndex]['Address'],
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ],
+                    const Text(
+                      'Description',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     Column(
-                      children: [
+                      children: const [
                         Text(
-                          mosqueData[currentIndex]['Rate'].toString(),
+                          '4.6',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                           ),
@@ -80,8 +100,9 @@ class MosqueScreen extends StatelessWidget {
                 ),
               ),
               kSizedBox,
-              const Text(
-                'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+              //Description
+              Text(
+                widget.placeData![widget.currentIndex!]['Description'],
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
@@ -133,7 +154,7 @@ class MosqueScreen extends StatelessWidget {
                       containerColor: Color(0xff66191c),
                       iconName: FontAwesomeIcons.film,
                       iconColor: Colors.black,
-                      containerName: 'Mosques',
+                      containerName: 'Cinemas',
                     ),
                   ],
                 ),
@@ -143,8 +164,20 @@ class MosqueScreen extends StatelessWidget {
           ),
         ),
       ),
-
     );
   }
 }
-//Center(child: Text(mallData[currentIndex]['Name'].toString()))
+
+// FutureBuilder<QuerySnapshot>(
+// future: cairoHotelsCollection.get(),
+// builder: (context,snapshot){
+// if(snapshot.hasData) {
+// List<HotelModel> hotelList = [];
+// for(int i=0 ; i < snapshot.data!.docs.length;i++) {
+// hotelList.add(HotelModel.fromJson(snapshot.data!.docs[i]));
+// print(hotelList[i]);
+// }
+//
+// }
+//
+// });

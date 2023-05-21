@@ -1,19 +1,44 @@
 import 'package:TourGuideApp/components.dart';
 import 'package:TourGuideApp/constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class MosqueScreen extends StatelessWidget {
-  MosqueScreen({
+class PlaceScreenNew extends StatefulWidget {
+
+  PlaceScreenNew({
     Key? key,
-    required this.mosqueData,
-    required this.currentIndex
+required this.placeData,
+required this.currentIndex
   }
-      ) : super(key: key);
-  List<QueryDocumentSnapshot> mosqueData;
-  int currentIndex;
+  ) : super(key: key);
+List<QueryDocumentSnapshot> placeData;
+int currentIndex;
+
+  @override
+  State<PlaceScreenNew> createState() => _PlaceScreenNewState();
+}
+
+class _PlaceScreenNewState extends State<PlaceScreenNew> {
+  late String imageUrl;
+  final storage = FirebaseStorage.instance;
+  // final ref = FirebaseStorage.instance.ref().child('testimage');
+@override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    imageUrl='';
+    getImageUrl();
+  }
+  Future<void> getImageUrl() async {
+    final ref = storage.ref().child('/cairo/places/Abdeen palace/IMG_4329.jpeg');
+    final url = await ref.getDownloadURL();
+    setState(() {
+      imageUrl=url;
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,13 +59,14 @@ class MosqueScreen extends StatelessWidget {
             children: [
               //Image
               CustomImage(
-                imagesLength: mosqueData.length.toString(),
+                imagesLength: widget.placeData.length.toString(),
                 fontSize: 28,
-                imageUrl: mosqueData[currentIndex]['Imageurl'],
-                endImageUrl:
-                'https://media.architecturaldigest.com/photos/58e2a407c0e88d1a6a20066b/16:9/w_1280,c_limit/Pyramid%20of%20Giza%201.jpg',
-                itemName: mosqueData[currentIndex]['Name'],
-                itemLocation: mosqueData[currentIndex]['cityName'],
+                imageUrl: widget.placeData[widget.currentIndex]['Imageurl'],
+                endImageUrl:imageUrl,
+
+                //'https://media.istockphoto.com/id/1322277517/photo/wild-grass-in-the-mountains-at-sunset.jpg?s=612x612&w=0&k=20&c=6mItwwFFGqKNKEAzv0mv6TaxhLN3zSE43bWmFN--J5w='
+                itemName: widget.placeData[widget.currentIndex]['Name'],
+                itemLocation: widget.placeData[widget.currentIndex]['cityName'],
               ),
               kSizedBox,
               Padding(
@@ -54,7 +80,7 @@ class MosqueScreen extends StatelessWidget {
                         Container(
                           width : 220,
                           child: Text(
-                            mosqueData[currentIndex]['Address'],
+                            widget.placeData[widget.currentIndex]['Address'],
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
@@ -63,17 +89,6 @@ class MosqueScreen extends StatelessWidget {
                             ),
                           ),
                         ),
-                      ],
-                    ),
-                    Column(
-                      children: [
-                        Text(
-                          mosqueData[currentIndex]['Rate'].toString(),
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text('Ratings'),
                       ],
                     ),
                   ],
@@ -133,7 +148,7 @@ class MosqueScreen extends StatelessWidget {
                       containerColor: Color(0xff66191c),
                       iconName: FontAwesomeIcons.film,
                       iconColor: Colors.black,
-                      containerName: 'Mosques',
+                      containerName: 'Cinemas',
                     ),
                   ],
                 ),
@@ -147,4 +162,4 @@ class MosqueScreen extends StatelessWidget {
     );
   }
 }
-//Center(child: Text(mallData[currentIndex]['Name'].toString()))
+ //Center(child: Text(placeData[currentIndex]['Name'].toString()))

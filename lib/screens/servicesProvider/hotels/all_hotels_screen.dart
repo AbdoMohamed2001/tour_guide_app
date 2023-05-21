@@ -1,20 +1,25 @@
-import 'package:TourGuideApp/screens/servicesProvider/malls/mall.dart';
+import 'dart:collection';
+
+import 'package:TourGuideApp/components.dart';
+import 'package:TourGuideApp/screens/servicesProvider/hotels/hotel_screen.dart';
+import 'package:TourGuideApp/screens/servicesProvider/malls/place_screen_new.dart';
 import 'package:bordered_text/bordered_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class AllHotels extends StatelessWidget {
   static String id = 'allHotels';
   final DocumentReference cityDocId;
+  Icon starIcon = Icon(Icons.star_rate_rounded,
+  color: Colors.yellow,
+  );
 
   AllHotels({
     Key? key,
     required this.cityDocId,
   }) : super(key: key);
-  CollectionReference cairoMallsCollection = FirebaseFirestore.instance
-      .collection('cities')
-      .doc('CairoU3CcWkb031dRzxuy')
-      .collection('Mall');
+
 
 
   @override
@@ -39,7 +44,7 @@ class AllHotels extends StatelessWidget {
                 centerTitle: true,
                 elevation: 0,
                 title: const Text(
-                  'All Malls',
+                  'All Hotels',
                   style: TextStyle(
                     color: Colors.black,
                   ),
@@ -59,57 +64,130 @@ class AllHotels extends StatelessWidget {
                   onTap: () {
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) {
-                          return MallNew(
-                            mallData: allDocs,
+                          return HotelScreen(
+                            hotelData: allDocs,
                             currentIndex: index,
                           );
                         }));
                   },
-                  child: Stack(
-                    children: [
-                      Image(
-                        image: NetworkImage('${allDocs[index]['Imageurl']}'),
-                        width: double.infinity,
-                        height: 200,
-                        fit: BoxFit.cover,
-                      ),
-                      Positioned(
-                        top: 130,
-                        left: 20,
-                        child: BorderedText(
-                          strokeColor: Colors.black,
-                          strokeWidth: 2,
-                          strokeCap: StrokeCap.butt,
-                          strokeJoin: StrokeJoin.bevel,
-                          child: Text(
-                            '${allDocs[index]['Name']}',
-                            maxLines: 2,
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 6.0),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: Colors.grey,
+                          width: 0.1,
                         ),
-                      ), //Done
-                      Positioned(
-                        top: 160,
-                        left: 20,
-                        child: BorderedText(
-                          strokeColor: Colors.black,
-                          strokeWidth: 2,
-                          strokeCap: StrokeCap.butt,
-                          strokeJoin: StrokeJoin.bevel,
-                          child: Text(
-                            '${allDocs[index]['cityName']}',
-                            style: TextStyle(
-                              fontSize: 20,
-                              color: Colors.white,
-                            ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.shade600,
+                            spreadRadius: 1,
+                            blurRadius: 3,
+                            blurStyle: BlurStyle.outer,
+                            offset: const Offset(0, 5),
+
                           ),
+                        ],
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                        child: Column(
+                          children: [
+                            SizedBox(height: 5,),
+                            Stack(
+                              children: [
+                                Image(
+                                  image: NetworkImage('${allDocs[index]['Imageurl']}'),
+                                  width: double.infinity,
+                                  height: 220,
+                                  fit: BoxFit.cover,
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 5,),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(allDocs[index]['Name'],
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                ),
+                                Row(
+                                  children: [
+                                    starIcon,
+                                    starIcon,
+                                    starIcon,
+                                    starIcon,
+                                    starIcon,
+                                  ],
+                                ),
+                              ],
+                            ),
+                            Text(allDocs[index]['Address']),
+
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 4),
+                              child: Container(
+                                width: double.infinity,
+                                height: 100,
+                                decoration: const BoxDecoration(
+                                  color: Colors.white30,
+                                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Container(
+                                      width: 70,
+                                      child: Column(
+                                        children:  [
+                                          SizedBox(height: 10,),
+                                          Icon(
+                                            Icons.looks_one_outlined,
+                                          ),
+                                          Text(allDocs[index]['features'][0],
+                                            textAlign: TextAlign.center,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Container(
+                                      width: 130,
+                                      child: Column(
+                                        children:  [
+                                          SizedBox(height: 10,),
+                                          Icon(Icons.looks_two_outlined),
+                                          Text(allDocs[index]['features'][1],
+                                          textAlign: TextAlign.center,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Container(
+                                      width: 100,
+                                      child: Column(
+                                        children:  [
+                                          SizedBox(height: 10,),
+                                          Icon(Icons.looks_3_outlined),
+                                          Text(allDocs[index]['features'][3],
+                                            maxLines: 2,
+                                            textAlign: TextAlign.center,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+
+                          ],
                         ),
                       ),
-                    ],
+                    ),
                   ),
                 ),
                 itemCount: snapshot.data!.docs.length,
@@ -136,5 +214,49 @@ class AllHotels extends StatelessWidget {
             ),
           );
         });
+  }
+}
+
+class FeaturesContainer extends StatelessWidget {
+  const FeaturesContainer({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      height: 120,
+      decoration: const BoxDecoration(
+        color: Colors.white30,
+        borderRadius: BorderRadius.all(Radius.circular(10)),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: const [
+              Icon(
+                Icons.looks_one_outlined,
+              ),
+              Text('Free Wifi'),
+            ],
+          ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: const [
+              Icon(Icons.looks_two_outlined),
+              Text('Room Services'),
+            ],
+          ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: const [
+              Icon(Icons.looks_3_outlined),
+              Text('Outdoor Pool'),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 }

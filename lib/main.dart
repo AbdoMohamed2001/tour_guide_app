@@ -1,20 +1,13 @@
 
-import 'package:TourGuideApp/screens/all_places_screen.dart';
+import 'package:TourGuideApp/screens/bottomNavScreens/account_screen.dart';
 import 'package:TourGuideApp/screens/homePage/all_cities_screen.dart';
-import 'package:TourGuideApp/screens/servicesProvider/cafes/all_cafes.dart';
-import 'package:TourGuideApp/screens/servicesProvider/cinemas/all_cinemas_screen.dart';
-import 'package:TourGuideApp/screens/servicesProvider/hotels/all_hotels_screen.dart';
 import 'package:TourGuideApp/screens/homePage/best_location_screen.dart';
 import 'package:TourGuideApp/screens/homePage/home_screen.dart';
 import 'package:TourGuideApp/screens/login/login_screen.dart';
 import 'package:TourGuideApp/screens/login/register_screen.dart';
-import 'package:TourGuideApp/screens/servicesProvider/malls/all_malls.dart';
-import 'package:TourGuideApp/screens/servicesProvider/mosques/all_mosques_screen.dart';
-import 'package:TourGuideApp/screens/servicesProvider/restaurants/all_restaurants_screen.dart';
 import 'package:TourGuideApp/screens/servicesProvider/services_provider_screen.dart';
 import 'package:TourGuideApp/screens/login/welcome_screen.dart';
 import 'package:TourGuideApp/screens/test.dart';
-import 'package:TourGuideApp/test_firebase.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
@@ -44,6 +37,7 @@ class MyApp extends StatelessWidget {
         ServicesProvider.id : (context) =>           ServicesProvider(),
         BestLocations.id    : (context) =>     const BestLocations(),
         TestPage.id             : (context) => TestPage(),
+        AccountScreen.id : (context) => AccountScreen(),
       },
       debugShowCheckedModeBanner: false,
       title: 'Your Tour Guide',

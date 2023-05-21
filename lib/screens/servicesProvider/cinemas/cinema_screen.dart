@@ -38,10 +38,6 @@ class CinemaScreen extends StatelessWidget {
                 imagesLength: cinemaData.length.toString(),
                 fontSize: 28,
                 imageUrl: cinemaData[currentIndex]['Imageurl'],
-                topImageUrl:
-                'https://i2-prod.mirror.co.uk/incoming/article28660732.ece/ALTERNATES/n615/0_PAY-CMA_Red_PhArrows_2.jpg',
-                middleImageUrl:
-                'https://daily.jstor.org/wp-content/uploads/2014/09/pyramids.jpg',
                 endImageUrl:
                 'https://media.architecturaldigest.com/photos/58e2a407c0e88d1a6a20066b/16:9/w_1280,c_limit/Pyramid%20of%20Giza%201.jpg',
                 itemName: cinemaData[currentIndex]['Name'],

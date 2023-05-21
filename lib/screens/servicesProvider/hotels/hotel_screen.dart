@@ -1,16 +1,28 @@
+
 import 'package:TourGuideApp/components.dart';
 import 'package:TourGuideApp/constants.dart';
-import 'package:TourGuideApp/models/hotel_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_signin_button/flutter_signin_button.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
+
+// ignore_for_file: must_be_immutable
 class HotelScreen extends StatefulWidget {
-  const HotelScreen({
+  HotelScreen({
     Key? key,
-    required this.hotelModel,
+    required this.hotelData,
+    required this.currentIndex,
   }) : super(key: key);
   static String id = 'hotelScreen';
-  final HotelModel hotelModel;
+  List<QueryDocumentSnapshot> hotelData;
+  int currentIndex;
+  Icon starIcon = Icon(
+    Icons.star_rate_rounded,
+    color: Colors.yellow,
+  );
+
+
 
   @override
   State<HotelScreen> createState() => _HotelScreenState();
@@ -21,9 +33,11 @@ class _HotelScreenState extends State<HotelScreen> {
   bool isRated = false;
   Color color = Colors.white;
   Color isRatedColor = Colors.black;
-  IconData starIcon = Icons.star_rounded;
-  Color starColor = Colors.yellow;
-
+  // Future<void> _launchUrl() async {
+  //   if (!await launchUrl(widget._url)) {
+  //     throw Exception('Could not launch ${widget._url}');
+  //   }
+  // }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,18 +54,12 @@ class _HotelScreenState extends State<HotelScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               CustomImage(
-                imagesLength: '2',
+                imagesLength: '+2',
                 fontSize: 24,
-                imageUrl:
-                    'https://pix10.agoda.net/hotelImages/2287337/0/fe8e5958b4c29bb2c6a844b1eef965a2.jpg?ca=17&ce=1&s=1024x768',
-                topImageUrl:
-                    'https://static21.com-hotel.com/uploads/hotel/60785/photo/ramses-hilton-hotel-casino_15382536028.jpg',
-                middleImageUrl:
-                    'https://pix10.agoda.net/hotelImages/886/8869/8869_18022806530062421262.jpg?ca=6&ce=1&s=1024x768',
-                endImageUrl:
-                    'https://cf.bstatic.com/images/hotel/max1024x768/138/13817494.jpg',
-                itemName: widget.hotelModel.name,
-                itemLocation: 'Cairo',
+                imageUrl:widget.hotelData[widget.currentIndex]['Imageurl'],
+                endImageUrl: widget.hotelData[widget.currentIndex]['images'][0],
+                itemName: widget.hotelData[widget.currentIndex]['Name'],
+                itemLocation:  widget.hotelData[widget.currentIndex]['cityName'],
               ),
               kSizedBox,
               Padding(
@@ -62,62 +70,61 @@ class _HotelScreenState extends State<HotelScreen> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          widget.hotelModel.location,
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
+                        Container(
+                          width: 250,
+                          child: Text(
+                            widget.hotelData[widget.currentIndex]['Address'],
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              starIcon,
-                              color: starColor,
-                              size: 24,
-                            ),
-                            Icon(
-                              starIcon,
-                              color: starColor,
-                              size: 24,
-                            ),
-                            Icon(
-                              starIcon,
-                              color: starColor,
-                              size: 24,
-                            ),
-                            Icon(
-                              starIcon,
-                              color: starColor,
-                              size: 24,
-                            ),
-                            Icon(
-                              starIcon,
-                              color: starColor,
-                              size: 24,
-                            ),
-                          ],
                         ),
                       ],
                     ),
-                    Column(
-                      children: [
-                        Text(
-                          '${widget.hotelModel.rate}',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
+                    GestureDetector(
+                      onTap: (){},
+                      child: Container(
+                        child: Image.asset('assets/images/googlemaps.png',
+                          width: 50,
+                          height: 50,
+
                         ),
-                        Text('Ratings'),
-                      ],
+                      ),
                     ),
                   ],
                 ),
               ),
+              SizedBox(height: 10,),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    children: [
+                      Text(
+                        '${widget.hotelData[widget.currentIndex]['Rate']}',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text('Ratings'),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      widget.starIcon,
+                      widget.starIcon,
+                      widget.starIcon,
+                      widget.starIcon,
+                      widget.starIcon,
+                    ],
+                  ),
+                ],
+              ),
               const SizedBox(
                 height: 10,
               ),
+              //Features
               const Text(
                 'Features',
                 style: TextStyle(
@@ -125,57 +132,158 @@ class _HotelScreenState extends State<HotelScreen> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              Row(
+              //Feature1,2
+              Column(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    '${widget.hotelModel.features['first']}'.toUpperCase(),
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 24,
-                    ),
+                  Row(
+                    children: [
+                      widget.hotelData[widget.currentIndex]['features'][0].toString().contains('wifi')?
+                      Icon(Icons.wifi):
+                      widget.hotelData[widget.currentIndex]['features'][0].toString().contains('rest')?
+                      Icon(Icons.restaurant_rounded):
+                      widget.hotelData[widget.currentIndex]['features'][0].toString().contains('pool')?
+                      Icon(Icons.restaurant_rounded)
+                          : Icon(Icons.looks_one),
+                      SizedBox(width: 10,),
+                      Text(
+                        '${widget.hotelData[widget.currentIndex]['features'][0]}'
+                            .toUpperCase(),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ],
                   ),
-                  Text(
-                    '${widget.hotelModel.features['second']}'.toUpperCase(),
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 24,
-                    ),
+                  Row(
+                    children: [
+                      widget.hotelData[widget.currentIndex]['features'][1].toString().contains('wifi')?
+                      Icon(Icons.wifi):
+                      widget.hotelData[widget.currentIndex]['features'][1].toString().contains('rest')?
+                      Icon(Icons.restaurant_rounded):
+                      widget.hotelData[widget.currentIndex]['features'][1].toString().contains('pool')?
+                      Icon(Icons.pool):
+                      widget.hotelData[widget.currentIndex]['features'][1].toString().contains('pet')?
+                      Icon(Icons.pets):
+                      widget.hotelData[widget.currentIndex]['features'][1].toString().contains('air')?
+                      Icon(Icons.star_rounded):
+                      widget.hotelData[widget.currentIndex]['features'][1].toString().contains('room')?
+                      Icon(Icons.room_service):
+                      widget.hotelData[widget.currentIndex]['features'][1].toString().contains('yoga')?
+                      Icon(FontAwesomeIcons.star):
+                      widget.hotelData[widget.currentIndex]['features'][1].toString().contains('coffee')?
+                      Icon(FontAwesomeIcons.coffee):
+                      widget.hotelData[widget.currentIndex]['features'][1].toString().contains('child')?
+                      Icon(FontAwesomeIcons.child):
+                      widget.hotelData[widget.currentIndex]['features'][1].toString().contains('accom')?
+                      Icon(FontAwesomeIcons.houseUser)
+
+                          : Icon(Icons.star),
+                      SizedBox(width: 10,),
+                      Text(
+                        '${widget.hotelData[widget.currentIndex]['features'][1]}'
+                            .toUpperCase(),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      widget.hotelData[widget.currentIndex]['features'][2].toString().contains('wifi')?
+                      Icon(Icons.wifi):
+                      widget.hotelData[widget.currentIndex]['features'][2].toString().contains('rest')?
+                      Icon(Icons.restaurant_rounded):
+                      widget.hotelData[widget.currentIndex]['features'][2].toString().contains('pool')?
+                      Icon(Icons.pool):
+                      widget.hotelData[widget.currentIndex]['features'][2].toString().contains('pet')?
+                      Icon(Icons.pets):
+                      widget.hotelData[widget.currentIndex]['features'][2].toString().contains('air')?
+                      Icon(Icons.star_rounded):
+                      widget.hotelData[widget.currentIndex]['features'][2].toString().contains('room')?
+                      Icon(Icons.room_service):
+                      widget.hotelData[widget.currentIndex]['features'][2].toString().contains('yoga')?
+                      Icon(FontAwesomeIcons.star):
+                      widget.hotelData[widget.currentIndex]['features'][2].toString().contains('coffee')?
+                      Icon(FontAwesomeIcons.coffee):
+                      widget.hotelData[widget.currentIndex]['features'][2].toString().contains('child')?
+                      Icon(FontAwesomeIcons.child):
+                      widget.hotelData[widget.currentIndex]['features'][2].toString().contains('accom')?
+                      Icon(FontAwesomeIcons.houseUser)
+
+                          : Icon(Icons.star),
+                      SizedBox(width: 10,),
+
+                      Text(
+                        '${widget.hotelData[widget.currentIndex]['features'][2]}'
+                            .toUpperCase(),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      widget.hotelData[widget.currentIndex]['features'][3].toString().contains('wifi')?
+                      Icon(Icons.wifi):
+                      widget.hotelData[widget.currentIndex]['features'][3].toString().contains('rest')?
+                      Icon(Icons.restaurant_rounded):
+                      widget.hotelData[widget.currentIndex]['features'][3].toString().contains('pool')?
+                      Icon(Icons.pool):
+                      widget.hotelData[widget.currentIndex]['features'][3].toString().contains('pet')?
+                      Icon(Icons.pets):
+                      widget.hotelData[widget.currentIndex]['features'][3].toString().contains('air')?
+                      Icon(Icons.star_rounded):
+                      widget.hotelData[widget.currentIndex]['features'][3].toString().contains('room')?
+                      Icon(Icons.room_service):
+                      widget.hotelData[widget.currentIndex]['features'][3].toString().contains('yoga')?
+                      Icon(FontAwesomeIcons.star):
+                      widget.hotelData[widget.currentIndex]['features'][3].toString().contains('coffee')?
+                      Icon(FontAwesomeIcons.coffee):
+                      widget.hotelData[widget.currentIndex]['features'][3].toString().contains('child')?
+                      Icon(FontAwesomeIcons.child):
+                      widget.hotelData[widget.currentIndex]['features'][3].toString().contains('accom')?
+                      Icon(FontAwesomeIcons.houseUser)
+
+                          : Icon(Icons.star),
+                      SizedBox(width: 10,),
+                      Text(
+                        '${widget.hotelData[widget.currentIndex]['features'][3]}'
+                            .toUpperCase(),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '${widget.hotelModel.features['third']}'.toUpperCase(),
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 24,
-                    ),
-                  ),
-                  Text(
-                    '${widget.hotelModel.features['fourth']}'.toUpperCase(),
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 24,
-                    ),
-                  ),
-                ],
+              //Feature3,4
+              SizedBox(height: 10,),
+              GestureDetector(
+                onTap: ()async {
+                  var url = Uri.parse(
+                      'https://goo.gl/maps/WA6j2X5mGqDKDeBZ9');
+                  if (await canLaunchUrl(url,)) {
+                    await launchUrl(url);
+                  };
+                },
+                child: Container(
+                  width: 120,
+                  height: 60,
+                  color: Colors.transparent,
+                  child: Image.asset('assets/images/booking2.png'),
+                ),
               ),
-              Row(
-                children: [
-                  const Text('- More Features : '),
-                  const Text(
-                    'www.hilton.com',
-                    style: TextStyle(
-                        decoration: TextDecoration.underline,
-                        fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
+              SizedBox(height: 10,),
+              //contact
               const Text(
                 'Contact',
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
@@ -192,10 +300,10 @@ class _HotelScreenState extends State<HotelScreen> {
                       Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
-                          Text('Email'),
+                        children:  [
+                          Text('Web Site'),
                           Text(
-                            'ramses@hilton.com',
+                            widget.hotelData[widget.currentIndex]['Email'],
                             style: TextStyle(
                               decoration: TextDecoration.underline,
                               fontWeight: FontWeight.bold,
@@ -219,10 +327,10 @@ class _HotelScreenState extends State<HotelScreen> {
                       Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
-                          Text('Phone no'),
+                        children:  [
+                          Text('Phone nubmer'),
                           Text(
-                            '+20 2 25777444',
+                            widget.hotelData[widget.currentIndex]['Phone'].toString(),
                             style: TextStyle(
                               decoration: TextDecoration.underline,
                               fontWeight: FontWeight.bold,
@@ -233,29 +341,45 @@ class _HotelScreenState extends State<HotelScreen> {
                       const SizedBox(
                         width: 10,
                       ),
+                      //------------------------------------
+
                     ],
                   ),
+
                 ),
               ),
-              const SizedBox(
-                height: 20,
+              kSizedBox,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    child:
+                    widget.hotelData[widget.currentIndex]['images'][0].toString().isEmpty ?
+                    Text(''):
+                    Image.network(widget.hotelData[widget.currentIndex]['images'][0],
+                      width: 150,
+                      height: 200,
+                      fit: BoxFit.cover,
+                    ),
+
+                  ),
+                  Container(
+                    child:
+                    widget.hotelData[widget.currentIndex]['images'].length == 1 ?
+                    Text(''):
+
+                    Image.network(widget.hotelData[widget.currentIndex]['images'][1],
+                    width: 150,
+                      height: 200,
+                      fit: BoxFit.cover,
+                    ),
+
+                  ),
+                ],
               ),
-              Container(
-                height: 60,
-                color: Colors.greenAccent,
-                child: Row(
-                  children: [
-                    SignInButton(
-                      Buttons.Facebook,
-                      mini: true,
-                      onPressed: () {},
-                    )
-                  ],
-                ),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
+              kSizedBox,
+
+
             ],
           ),
         ),

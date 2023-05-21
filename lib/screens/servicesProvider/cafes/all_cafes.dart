@@ -1,4 +1,4 @@
-import 'package:TourGuideApp/screens/servicesProvider/malls/mall.dart';
+import 'package:TourGuideApp/screens/servicesProvider/malls/place_screen_new.dart';
 import 'package:bordered_text/bordered_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -39,7 +39,7 @@ class AllCafes extends StatelessWidget {
                 centerTitle: true,
                 elevation: 0,
                 title: const Text(
-                  'All Malls',
+                  'All Cafes',
                   style: TextStyle(
                     color: Colors.black,
                   ),
@@ -59,8 +59,8 @@ class AllCafes extends StatelessWidget {
                   onTap: () {
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) {
-                          return MallNew(
-                            mallData: allDocs,
+                          return PlaceScreenNew(
+                            placeData: allDocs,
                             currentIndex: index,
                           );
                         }));

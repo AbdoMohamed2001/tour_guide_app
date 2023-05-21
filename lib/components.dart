@@ -1,23 +1,10 @@
 // ignore_for_file: must_be_immutable
-
 import 'package:TourGuideApp/constants.dart';
-import 'package:TourGuideApp/models/cinema_model.dart';
-import 'package:TourGuideApp/models/hotel_model.dart';
-import 'package:TourGuideApp/models/mall_model.dart';
 import 'package:TourGuideApp/models/place_model.dart';
-import 'package:TourGuideApp/models/restaurant_model.dart';
 import 'package:TourGuideApp/screens/city_screen.dart';
-import 'package:TourGuideApp/screens/servicesProvider/cinemas/cinema_screen.dart';
-import 'package:TourGuideApp/screens/servicesProvider/hotels/all_hotels_screen.dart';
-import 'package:TourGuideApp/screens/servicesProvider/hotels/hotel_screen.dart';
-import 'package:TourGuideApp/screens/place_screen.dart';
-import 'package:TourGuideApp/screens/servicesProvider/malls/mall.dart';
-import 'package:TourGuideApp/screens/servicesProvider/mosques/mosque_screen.dart';
-import 'package:TourGuideApp/screens/servicesProvider/restaurants/all_restaurants_screen.dart';
-import 'package:TourGuideApp/screens/servicesProvider/restaurants/restaurants_screen.dart';
+import 'package:TourGuideApp/screens/places/place_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:bordered_text/bordered_text.dart';
 
 //------------------------------------------------------------------------------------
@@ -34,7 +21,7 @@ class CustomAppBar extends StatelessWidget {
     );
   }
 }
-
+//------------------------------------------------------------------------------------
 class CustomTextField extends StatefulWidget {
   CustomTextField({
     Key? key,
@@ -232,8 +219,6 @@ class CustomImage extends StatefulWidget {
   CustomImage({
     Key? key,
     required this.imageUrl,
-    this.topImageUrl,
-    this.middleImageUrl,
     this.endImageUrl,
     required this.itemName,
     required this.itemLocation,
@@ -241,8 +226,6 @@ class CustomImage extends StatefulWidget {
     required this.imagesLength,
   }) : super(key: key);
   String imageUrl;
-  String? topImageUrl;
-  String? middleImageUrl;
   String? endImageUrl;
   String? itemName;
   String? itemLocation;
@@ -311,28 +294,6 @@ class _CustomImageState extends State<CustomImage> {
             ),
           ), //Done
           //Top Image
-          Positioned(
-            top: 170,
-            right: 20,
-            child: SmallContainer(
-              width: 55,
-              height: 50,
-              boxDecorationBorderColor: Colors.white,
-              imageUrl: widget.topImageUrl,
-            ),
-          ),
-          //middle Image
-          Positioned(
-            //''
-            top: 230,
-            right: 20,
-            child: SmallContainer(
-              width: 55,
-              height: 50,
-              boxDecorationBorderColor: Colors.white,
-              imageUrl: widget.middleImageUrl,
-            ),
-          ),
           //End Image
           Positioned(
             top: 290,
@@ -364,7 +325,7 @@ class _CustomImageState extends State<CustomImage> {
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: Colors.black,
+                          color: Colors.white,
                         ),
                       ),
                     ),
@@ -415,49 +376,6 @@ class _CustomImageState extends State<CustomImage> {
 }
 //------------------------------------------------------------------------------------
 
-class FeaturesContainer extends StatelessWidget {
-  const FeaturesContainer({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      height: 70,
-      decoration: const BoxDecoration(
-        color: Colors.white30,
-        borderRadius: BorderRadius.all(Radius.circular(10)),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
-              Icon(
-                Icons.wifi_rounded,
-              ),
-              Text('Free Wifi'),
-            ],
-          ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
-              Icon(Icons.room_service_rounded),
-              Text('Room Services'),
-            ],
-          ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
-              Icon(Icons.pool),
-              Text('Outdoor Pool'),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
 //------------------------------------------------------------------------------------
 
 bool isFavourite = false;
@@ -467,278 +385,7 @@ Color isRatedColor = Colors.black;
 IconData starIcon = Icons.star_rounded;
 Color starColor = Colors.yellow;
 
-//------------------------------------------------------------------------------------
-class HotelItem extends StatelessWidget {
-  HotelItem(
-    this.index,
-    this.context, {
-    Key? key,
-    required this.hotelModel,
-  }) : super(key: key);
-  BuildContext context;
-  HotelModel hotelModel;
-  int index;
 
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => HotelScreen(hotelModel: hotelModel),
-            ));
-      },
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: const BorderRadius.all(
-                  Radius.circular(0),
-                ),
-                border: Border.all(
-                  color: Colors.grey,
-                  width: 0.1,
-                ),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Image(
-                    image: NetworkImage(hotelModel.imageUrl),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              hotelModel.name,
-                              // hotelName[index],
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  starIcon,
-                                  color: starColor,
-                                  size: 24,
-                                ),
-                                Icon(
-                                  starIcon,
-                                  color: starColor,
-                                  size: 24,
-                                ),
-                                Icon(
-                                  starIcon,
-                                  color: starColor,
-                                  size: 24,
-                                ),
-                                Icon(
-                                  starIcon,
-                                  color: starColor,
-                                  size: 24,
-                                ),
-                                Icon(
-                                  starIcon,
-                                  color: starColor,
-                                  size: 24,
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                        Text(hotelModel.location
-                            // hotelLocation[index],
-                            ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Column(
-                              children: const [
-                                Icon(Icons.wifi),
-                                Text('Free Wifi'),
-                              ],
-                            ),
-                            Column(
-                              children: const [
-                                Icon(Icons.pool),
-                                Text('Outdoor pool'),
-                              ],
-                            ),
-                            Column(
-                              children: const [
-                                Icon(Icons.local_parking),
-                                Text('Free Parking'),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// class MallItem extends StatelessWidget {
-//   MallItem({Key? key,
-//   required this.mallModel,
-//   }) : super(key: key);
-//   MallModel mallModel;
-//   @override
-//   Widget build(BuildContext context) {
-//     return  GestureDetector(
-//       onTap: () {
-//         Navigator.push(
-//             context,
-//             MaterialPageRoute(
-//               builder: (context) => MallNew(mallData: mallData, currentIndex: currentIndex),
-//             ));
-//       },
-//       child: Column(
-//         children: [
-//           Padding(
-//             padding: const EdgeInsets.all(8.0),
-//             child: Container(
-//               decoration: BoxDecoration(
-//                 borderRadius: const BorderRadius.all(
-//                   Radius.circular(0),
-//                 ),
-//                 border: Border.all(
-//                   color: Colors.grey,
-//                   width: 0.1,
-//                 ),
-//               ),
-//               child: Column(
-//                 crossAxisAlignment: CrossAxisAlignment.start,
-//                 children: [
-//                   Image(
-//                     image: NetworkImage(mallModel.imageUrl),
-//                   ),
-//                   Padding(
-//                     padding: const EdgeInsets.all(8.0),
-//                     child: Column(
-//                       crossAxisAlignment: CrossAxisAlignment.start,
-//                       children: [
-//                         Row(
-//                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                           children: [
-//                             Text(
-//                               mallModel.name,
-//                               // hotelName[index],
-//                             ),
-//                             Row(
-//                               mainAxisAlignment: MainAxisAlignment.center,
-//                               children: [
-//                                 Icon(
-//                                   starIcon,
-//                                   color: starColor,
-//                                   size: 24,
-//                                 ),
-//                                 Icon(
-//                                   starIcon,
-//                                   color: starColor,
-//                                   size: 24,
-//                                 ),
-//                                 Icon(
-//                                   starIcon,
-//                                   color: starColor,
-//                                   size: 24,
-//                                 ),
-//                                 Icon(
-//                                   starIcon,
-//                                   color: starColor,
-//                                   size: 24,
-//                                 ),
-//                                 Icon(
-//                                   starIcon,
-//                                   color: starColor,
-//                                   size: 24,
-//                                 ),
-//                               ],
-//                             ),
-//                           ],
-//                         ),
-//                         Text(mallModel.address
-//                           // hotelLocation[index],
-//                         ),
-//                         const SizedBox(
-//                           height: 10,
-//                         ),
-//                         Row(
-//                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                           children: [
-//                             Column(
-//                               children: const [
-//                                 Icon(Icons.wifi),
-//                                 Text('Free Wifi'),
-//                               ],
-//                             ),
-//                             Column(
-//                               children: const [
-//                                 Icon(Icons.pool),
-//                                 Text('Outdoor pool'),
-//                               ],
-//                             ),
-//                             Column(
-//                               children: const [
-//                                 Icon(Icons.local_parking),
-//                                 Text('Free Parking'),
-//                               ],
-//                             ),
-//                           ],
-//                         ),
-//                       ],
-//                     ),
-//                   ),
-//                 ],
-//               ),
-//             ),
-//           ),
-//           const SizedBox(
-//             height: 20,
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }
-
-List<String> hotelImage = [
-  'https://pix10.agoda.net/hotelImages/2287337/0/fe8e5958b4c29bb2c6a844b1eef965a2.jpg?ca=17&ce=1&s=1024x768',
-  'https://dq5r178u4t83b.cloudfront.net/wp-content/uploads/sites/23/2016/10/24142930/gallery_elgezirah_Exterior-2.jpg',
-  'https://cf.bstatic.com/images/hotel/max1024x768/434/434733227.jpg',
-  'https://cf.bstatic.com/images/hotel/max1024x768/434/434733227.jpg',
-  'https://cf.bstatic.com/images/hotel/max1024x768/434/434733227.jpg',
-];
-List<String> hotelName = [
-  'Ramses Hilton',
-  'Sofitel Cairo Nile El Gezirah',
-  'Cairo Marriott Hotel',
-];
-List<String> hotelLocation = [
-  '1115 Corniche Wl Nile, Cairo',
-  '3 El Thawra Council St Zamalek, El Orman, Cairo',
-  'Saray El, El Gezira, Omar Khayyam, Zamalek, Cairo'
-];
 //--------------------------------------------------------------------------------
 
 void showSnackBar(BuildContext context, String text) {
@@ -746,66 +393,6 @@ void showSnackBar(BuildContext context, String text) {
     content: Text(text),
   ));
 }
-//--------------------------------------------------
-
-//--------------------------------------------------------------
-
-Widget BuildBestLocationItem(context, int index) => GestureDetector(
-      onTap: () {
-        Navigator.pushNamed(context, PlacePage.id);
-      },
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: const BorderRadius.all(
-                  Radius.circular(0),
-                ),
-                border: Border.all(
-                  color: Colors.grey,
-                  width: 0.1,
-                ),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Image(
-                    image: NetworkImage(hotelImage[index]),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              hotelName[index],
-                            ),
-                          ],
-                        ),
-                        Text(
-                          hotelLocation[index],
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-        ],
-      ),
-    );
 
 //-------------------------------------------------------------
 
@@ -1029,87 +616,6 @@ class CityFeatures extends StatelessWidget {
 }
 
 //-------------------------------------------------------------
-class AllServicesItem extends StatelessWidget {
-  List<QueryDocumentSnapshot>? allDocs;
-  int index;
-  String ImageurlFieldName;
-  String nameFieldName;
-  String cityNameFieldName;
-  Widget pushedPage;
-
-  AllServicesItem({
-    Key? key,
-    required this.allDocs,
-    required this.index,
-    required this.ImageurlFieldName,
-    required this.cityNameFieldName,
-    required this.nameFieldName,
-    required this.pushedPage,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return pushedPage;
-        }));
-      },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-        child: ClipRRect(
-          borderRadius: BorderRadius.all(Radius.circular(10)),
-          child: Stack(
-            children: [
-              Image(
-                image: NetworkImage('${allDocs![index][ImageurlFieldName]}'),
-                width: double.infinity,
-                height: 200,
-                fit: BoxFit.cover,
-              ),
-              Positioned(
-                top: 130,
-                left: 20,
-                child: BorderedText(
-                  strokeColor: Colors.black,
-                  strokeWidth: 2,
-                  strokeCap: StrokeCap.butt,
-                  strokeJoin: StrokeJoin.bevel,
-                  child: Text(
-                    '${allDocs![index][nameFieldName]}',
-                    maxLines: 2,
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ), //Done
-              Positioned(
-                top: 160,
-                left: 20,
-                child: BorderedText(
-                  strokeColor: Colors.black,
-                  strokeWidth: 2,
-                  strokeCap: StrokeCap.butt,
-                  strokeJoin: StrokeJoin.bevel,
-                  child: Text(
-                    '${allDocs![index][cityNameFieldName]}',
-                    style: TextStyle(
-                      fontSize: 20,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
 
 //-------------------------------------------------------------
 class BuildAllCitiesItem extends StatelessWidget {
@@ -1176,4 +682,94 @@ class BuildAllCitiesItem extends StatelessWidget {
     );
   }
 }
-//-------------------------------------------------------------
+
+//---------------------------------------------
+
+class BuildAllItemNew extends StatelessWidget {
+  BuildAllItemNew({
+    Key? key,
+    required this.allDocs,
+    required this.index,
+    required this.pushedPage,
+  }) : super(key: key);
+  var allDocs;
+  int index;
+  Widget pushedPage;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return pushedPage;
+        }));
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 6.0),
+        child: Container(
+          decoration: BoxDecoration(
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.shade700,
+                spreadRadius: 1,
+                blurRadius: 4,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+
+          child: Stack(
+            children: [
+              Image(
+                image: NetworkImage('${allDocs[index]['Imageurl']}'),
+                width: double.infinity,
+                height: 220,
+                fit: BoxFit.cover,
+              ),
+              Positioned(
+                top: 140,
+                left: 20,
+                child: BorderedText(
+                  strokeColor: Colors.black,
+                  strokeWidth: 2,
+                  strokeCap: StrokeCap.butt,
+                  strokeJoin: StrokeJoin.bevel,
+                  child: Text(
+                    '${allDocs[index]['Name']}',
+                    maxLines: 2,
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ), //Done
+              Positioned(
+                top: 170,
+                left: 20,
+                child: BorderedText(
+                  strokeColor: Colors.black,
+                  strokeWidth: 2,
+                  strokeCap: StrokeCap.butt,
+                  strokeJoin: StrokeJoin.bevel,
+                  child: Text(
+                    '${allDocs[index]['cityName']}',
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+
+//---------------------------------------------
+
