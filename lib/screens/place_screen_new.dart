@@ -7,26 +7,26 @@ import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class CinemaScreen extends StatefulWidget {
+class PlaceScreenNew extends StatefulWidget {
 
-  CinemaScreen({
+  PlaceScreenNew({
     Key? key,
-    required this.placeData,
-    required this.currentIndex
+required this.placeData,
+required this.currentIndex
   }
-      ) : super(key: key);
-  List<QueryDocumentSnapshot> placeData;
-  int currentIndex;
+  ) : super(key: key);
+List<QueryDocumentSnapshot> placeData;
+int currentIndex;
 
   @override
-  State<CinemaScreen> createState() => _CinemaScreenState();
+  State<PlaceScreenNew> createState() => _PlaceScreenNewState();
 }
 
-class _CinemaScreenState extends State<CinemaScreen> {
+class _PlaceScreenNewState extends State<PlaceScreenNew> {
   late String imageUrl;
   final storage = FirebaseStorage.instance;
   final dataKey = new GlobalKey();
-  @override
+@override
   void initState() {
     // TODO: implement initState
     super.initState();
@@ -179,11 +179,29 @@ class _CinemaScreenState extends State<CinemaScreen> {
                 ),
               ),
               kSizedBox,
+              // Text in description
+               Container(
+                 height: 80,
+                 child: SingleChildScrollView(
+                   clipBehavior: Clip.hardEdge,
+                   controller: ScrollController(
+                   ),
+                   child: Center(
+                     child: Text(
+                       widget.placeData[widget.currentIndex]['Description'],
+                       style: TextStyle(
+                        fontSize: 16,
+                      ),
+              ),
+                   ),
+                 ),
+               ),
+              SizedBox(height: 20,),
               //Opening hours
               Row(
                 children: [
                   Image.asset('assets/images/open.png',
-                    width: 100,
+                  width: 100,
                     height: 100,
                   ),
                   Column(
@@ -192,15 +210,15 @@ class _CinemaScreenState extends State<CinemaScreen> {
                       Row(
                         children: [
                           Text('From:  ',
-                            style: TextStyle(
-                              fontSize: 18,
-                            ),
+                          style: TextStyle(
+                            fontSize: 18,
+                          ),
                           ),
                           Text('06:00 AM',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                            ),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
                           ),
                         ],
                       ),
@@ -277,6 +295,56 @@ class _CinemaScreenState extends State<CinemaScreen> {
                 ],
               ),
               kSizedBox,
+              // const Text(
+              //   'Nearly to this place ',
+              //   style: TextStyle(
+              //     fontSize: 24,
+              //     fontWeight: FontWeight.bold,
+              //   ),
+              // ),
+              // kSizedBox,
+              // SingleChildScrollView(
+              //   scrollDirection: Axis.horizontal,
+              //   child: Row(
+              //     mainAxisAlignment: MainAxisAlignment.spaceAround,
+              //     children: [
+              //       NearlyPlaceItem(
+              //         containerColor: Colors.black,
+              //         iconName: FontAwesomeIcons.hotel,
+              //         iconColor: Color(0xff613207),
+              //         containerName: 'Hotels',
+              //       ),
+              //       const SizedBox(
+              //         width: 20,
+              //       ),
+              //       NearlyPlaceItem(
+              //         containerColor: Color(0xff613207),
+              //         iconName: FontAwesomeIcons.utensils,
+              //         iconColor: Colors.black,
+              //         containerName: 'Restaurants',
+              //       ),
+              //       const SizedBox(
+              //         width: 20,
+              //       ),
+              //       NearlyPlaceItem(
+              //         containerColor: Color(0xff613207),
+              //         iconName: FontAwesomeIcons.utensils,
+              //         iconColor: Colors.black,
+              //         containerName: 'Restaurants',
+              //       ),
+              //       const SizedBox(
+              //         width: 20,
+              //       ),
+              //       NearlyPlaceItem(
+              //         containerColor: Color(0xff66191c),
+              //         iconName: FontAwesomeIcons.film,
+              //         iconColor: Colors.black,
+              //         containerName: 'Cinemas',
+              //       ),
+              //     ],
+              //   ),
+              // ),
+              // kSizedBox,
             ],
           ),
         ),

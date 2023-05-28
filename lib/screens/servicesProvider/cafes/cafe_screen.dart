@@ -14,6 +14,7 @@ class CafeScreen extends StatelessWidget {
     required this.currentIndex
   }
       ) : super(key: key);
+  final dataKey = new GlobalKey();
 
   @override
   Widget build(BuildContext context) {
@@ -35,6 +36,8 @@ class CafeScreen extends StatelessWidget {
             children: [
               //Image
               CustomImage(
+                dataKey: dataKey,
+
                 imagesLength: CafeData.length.toString(),
                 fontSize: 28,
                 imageUrl: CafeData[currentIndex]['Imageurl'],

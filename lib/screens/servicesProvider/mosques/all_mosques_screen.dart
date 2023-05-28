@@ -1,5 +1,5 @@
 import 'package:TourGuideApp/components.dart';
-import 'package:TourGuideApp/screens/servicesProvider/malls/place_screen_new.dart';
+import 'package:TourGuideApp/screens/place_screen_new.dart';
 import 'package:bordered_text/bordered_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';

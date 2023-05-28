@@ -50,6 +50,8 @@ dependencies:
   get: ^4.6.5
   google_maps_flutter: ^2.2.8
   url_launcher: ^6.1.11
+  full_screen_image_null_safe: ^2.0.0
+  cached_network_image: ^3.2.3
 
 
 dev_dependencies:

@@ -1,9 +1,6 @@
 import 'package:TourGuideApp/components.dart';
-import 'package:TourGuideApp/screens/city_screen.dart';
-import 'package:bordered_text/bordered_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 class AllCities extends StatefulWidget {
   static String id = 'allCities';

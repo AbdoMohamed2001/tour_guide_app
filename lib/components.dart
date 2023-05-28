@@ -3,6 +3,7 @@ import 'package:TourGuideApp/constants.dart';
 import 'package:TourGuideApp/models/place_model.dart';
 import 'package:TourGuideApp/screens/city_screen.dart';
 import 'package:TourGuideApp/screens/places/place_screen.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:bordered_text/bordered_text.dart';
@@ -224,6 +225,7 @@ class CustomImage extends StatefulWidget {
     required this.itemLocation,
     required this.fontSize,
     required this.imagesLength,
+    required this.dataKey,
   }) : super(key: key);
   String imageUrl;
   String? endImageUrl;
@@ -232,6 +234,7 @@ class CustomImage extends StatefulWidget {
   String? description;
   double fontSize;
   String imagesLength;
+  GlobalKey dataKey = new GlobalKey();
 
   @override
   State<CustomImage> createState() => _CustomImageState();
@@ -298,38 +301,43 @@ class _CustomImageState extends State<CustomImage> {
           Positioned(
             top: 290,
             right: 20,
-            child: Container(
-              width: 55,
-              height: 50,
-              decoration: BoxDecoration(
-                color: Colors.transparent,
-                border: Border.all(
-                  color: Colors.white,
-                  width: 0.8,
+            child: GestureDetector(
+              onTap: (){
+                Scrollable.ensureVisible(widget.dataKey.currentContext!);
+              },
+              child: Container(
+                width: 55,
+                height: 50,
+                decoration: BoxDecoration(
+                  color: Colors.transparent,
+                  border: Border.all(
+                    color: Colors.white,
+                    width: 0.8,
+                  ),
                 ),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: Stack(
-                  fit: StackFit.passthrough,
-                  children: [
-                    Image(
-                      fit: BoxFit.cover,
-                      image: NetworkImage(
-                        widget.endImageUrl = "${widget.endImageUrl}",
-                      ),
-                    ),
-                    Center(
-                      child: Text(
-                        widget.imagesLength,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: Stack(
+                    fit: StackFit.passthrough,
+                    children: [
+                      Image(
+                        fit: BoxFit.cover,
+                        image: NetworkImage(
+                          widget.endImageUrl = "${widget.endImageUrl}",
                         ),
                       ),
-                    ),
-                  ],
+                      Center(
+                        child: Text(
+                          widget.imagesLength,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -720,11 +728,31 @@ class BuildAllItemNew extends StatelessWidget {
 
           child: Stack(
             children: [
+
               Image(
-                image: NetworkImage('${allDocs[index]['Imageurl']}'),
+                image: NetworkImage('${allDocs[index]['Imageurl']}',),
+                loadingBuilder: (context, child, loadingProgress) {
+                  if (loadingProgress == null) {
+                    return child;
+                  }
+                  else {
+                    return Center(
+                      child: Container(
+                        width: double.infinity,
+                        height: 220,
+                        child: Center(
+                          child: CircularProgressIndicator(
+                            color: Colors.orange,
+                          ),
+                        ),
+                      ),
+                    );
+                  }
+                },
                 width: double.infinity,
                 height: 220,
                 fit: BoxFit.cover,
+
               ),
               Positioned(
                 top: 140,

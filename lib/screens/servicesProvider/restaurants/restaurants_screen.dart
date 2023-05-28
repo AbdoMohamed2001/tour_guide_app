@@ -22,6 +22,7 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
   bool isRated = false;
   Color color = Colors.white;
   Color isRatedColor = Colors.black;
+  final dataKey = new GlobalKey();
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +44,7 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
             children: [
 //Image
               CustomImage(
+                dataKey: dataKey,
                 imagesLength: widget.restaurantData.length.toString(),
                 fontSize: 28,
                 imageUrl:widget.restaurantData[widget.currentIndex]['Imageurl'],

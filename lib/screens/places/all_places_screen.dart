@@ -1,5 +1,5 @@
 import 'package:TourGuideApp/components.dart';
-import 'package:TourGuideApp/screens/servicesProvider/malls/place_screen_new.dart';
+import 'package:TourGuideApp/screens/place_screen_new.dart';
 import 'package:bordered_text/bordered_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -12,10 +12,6 @@ class AllPlaces extends StatelessWidget {
     Key? key,
     required this.cityDocId,
   }) : super(key: key);
-  CollectionReference cairoMallsCollection = FirebaseFirestore.instance
-      .collection('cities')
-      .doc('CairoU3CcWkb031dRzxuy')
-      .collection('Mall');
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +67,8 @@ class AllPlaces extends StatelessWidget {
                     ),
               ),
             );
-          } else if (snapshot.connectionState == ConnectionState.none) {
+          }
+          else if (snapshot.connectionState == ConnectionState.none) {
             return Scaffold(
               body: Center(
                 child: CircularProgressIndicator(

@@ -1,4 +1,4 @@
-import 'package:TourGuideApp/screens/servicesProvider/malls/place_screen_new.dart';
+import 'package:TourGuideApp/screens/place_screen_new.dart';
 import 'package:bordered_text/bordered_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -11,10 +11,7 @@ class AllChurches extends StatelessWidget {
     Key? key,
     required this.cityDocId,
   }) : super(key: key);
-  CollectionReference cairoMallsCollection = FirebaseFirestore.instance
-      .collection('cities')
-      .doc('CairoU3CcWkb031dRzxuy')
-      .collection('Mall');
+
 
 
   @override
@@ -39,7 +36,7 @@ class AllChurches extends StatelessWidget {
                 centerTitle: true,
                 elevation: 0,
                 title: const Text(
-                  'All Malls',
+                  'All Churches',
                   style: TextStyle(
                     color: Colors.black,
                   ),

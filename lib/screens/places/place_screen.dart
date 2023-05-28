@@ -29,6 +29,7 @@ class _PlacePageState extends State<PlacePage> {
   Color isRatedColor = Colors.black;
 late String imageUrl;
 final storage = FirebaseStorage.instance;
+  final dataKey = new GlobalKey();
   @override
   void initState() {
     // TODO: implement initState
@@ -62,6 +63,8 @@ final storage = FirebaseStorage.instance;
             children: [
 //Image
               CustomImage(
+                dataKey: dataKey,
+
                 imagesLength: widget.placeData!.length.toString(),
                 fontSize: 28,
                 imageUrl: widget.placeData![widget.currentIndex!]['Imageurl'],

@@ -1,13 +1,14 @@
 import 'package:TourGuideApp/components.dart';
 import 'package:TourGuideApp/constants.dart';
 import 'package:TourGuideApp/screens/homePage/all_cities_screen.dart';
+import 'package:TourGuideApp/screens/homePage/best_location_screen.dart';
 import 'package:TourGuideApp/screens/places/place_screen.dart';
-import 'package:TourGuideApp/screens/servicesProvider/services_provider_screen.dart';
+import 'package:TourGuideApp/services_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class HomePageNavBar extends StatelessWidget {
+class HomePageNavBar extends StatefulWidget {
 
   List<QueryDocumentSnapshot> cinemaData;
   int currentIndex;
@@ -20,6 +21,12 @@ class HomePageNavBar extends StatelessWidget {
     required this.cinemaData,
     required this.currentIndex,
   }) : super(key: key);
+
+  @override
+  State<HomePageNavBar> createState() => _HomePageNavBarState();
+}
+
+class _HomePageNavBarState extends State<HomePageNavBar> {
 
   @override
   Widget build(BuildContext context)  {
@@ -115,7 +122,10 @@ class HomePageNavBar extends StatelessWidget {
                         //Best Locations
                         ServiceProviderItem(
                           onPressed: (){
-                            Navigator.pushNamed(context, 'bestLocations');
+                            Navigator.push(context, MaterialPageRoute(builder: (context){
+                              return AllBestPlaces();
+
+                            }));
                           },
                           boxDecorationColor: const Color(0xff19131b),
                           boxDecorationBorderRadius: 10,
@@ -167,7 +177,9 @@ class HomePageNavBar extends StatelessWidget {
                         //Services Provider
                         ServiceProviderItem(
                           onPressed: (){
-                            Navigator.pushNamed(context, ServicesProvider.id);
+                            Navigator.push(context, MaterialPageRoute(builder: (context){
+                              return ServicesScreen();
+                            }));
                           },
                           boxDecorationColor:  const Color(0xff4069a7),
                           boxDecorationBorderRadius: 10,

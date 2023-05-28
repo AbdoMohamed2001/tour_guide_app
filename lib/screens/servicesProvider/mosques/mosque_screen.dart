@@ -14,6 +14,8 @@ class MosqueScreen extends StatelessWidget {
       ) : super(key: key);
   List<QueryDocumentSnapshot> mosqueData;
   int currentIndex;
+  final dataKey = new GlobalKey();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,6 +36,8 @@ class MosqueScreen extends StatelessWidget {
             children: [
               //Image
               CustomImage(
+                dataKey: dataKey,
+
                 imagesLength: mosqueData.length.toString(),
                 fontSize: 28,
                 imageUrl: mosqueData[currentIndex]['Imageurl'],

@@ -1,89 +1,128 @@
 import 'package:TourGuideApp/components.dart';
-import 'package:TourGuideApp/models/place_model.dart';
+import 'package:TourGuideApp/screens/city_screen.dart';
+import 'package:bordered_text/bordered_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-class BestLocations extends StatefulWidget {
-  static String id = 'bestLocations';
+class AllBestPlaces extends StatefulWidget {
+  static String id = 'AllBestPlaces';
 
-  const BestLocations({Key? key}) : super(key: key);
+  const AllBestPlaces({Key? key}) : super(key: key);
 
   @override
-  State<BestLocations> createState() => _BestLocationsState();
+  State<AllBestPlaces> createState() => _AllBestPlacesState();
 }
 
-class _BestLocationsState extends State<BestLocations> {
+class _AllBestPlacesState extends State<AllBestPlaces> {
+  final CollectionReference bestplaces =
+  FirebaseFirestore.instance.collection('bestplaces');
+
+  List<DocumentReference> AllBestPlacesDocs = [
+    FirebaseFirestore.instance.collection('bestplaces').doc('2YkAzEd9zzOkPG3H8gi0'),
+    FirebaseFirestore.instance.collection('bestplaces').doc('NKXMDb2HshfyjidMTobU'),
+
+  ];
+  late final QuerySnapshot querySnapshot;
+
   @override
   Widget build(BuildContext context) {
-    CollectionReference cities =
-        FirebaseFirestore.instance.collection('cities');
-    CollectionReference cairoPlacesCollection =
-        cities.doc('CairoU3CcWkb031dRzxuy').collection('places');
-    return FutureBuilder<QuerySnapshot>(
-        future: cairoPlacesCollection.get(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            List<PlaceModel> placeModelList = [];
-            for (int i = 0; i < snapshot.data!.docs.length; i++) {
-              placeModelList.add(PlaceModel.fromJson(snapshot.data!.docs[i]));
+    return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        elevation: 0,
+        title: const Text(
+          'All Best Places',
+          style: TextStyle(
+            color: Colors.black,
+          ),
+        ),
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: const Icon(
+            Icons.arrow_back_ios_new_sharp,
+            color: Colors.black,
+          ),
+        ),
+      ),
+      body: FutureBuilder<QuerySnapshot>(
+          future: bestplaces.get(),
+          builder: (context, snapshot) {
+            List<QueryDocumentSnapshot>? allDocs = snapshot.data?.docs;
+            if (allDocs == null) {
+              return Center(
+                  child: CircularProgressIndicator(
+                    color: Colors.orange,
+                  ));
             }
-            return Scaffold(
-              appBar: AppBar(
-                centerTitle: true,
-                elevation: 0,
-                leading: IconButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  icon: const Icon(
-                    Icons.arrow_back_ios_new_sharp,
-                    color: Colors.black,
-                  ),
-                ),
-              ),
-              body: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Explore Best Locations in Egypt!',
-                      style: TextStyle(
-                        fontSize: 25,
+            else if (snapshot.connectionState == ConnectionState.done) {
+              return Column(
+                children: [
+                  ListView.separated(
+                    shrinkWrap: true,
+                    itemBuilder: (context, index) => GestureDetector(
+                      onTap: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) {
+                          return CityScreen(
+                            cityData: allDocs!,
+                            currentIndex: index,
+                            querySnapshot: querySnapshot,
+                            cityDocId: cityDocId,
+                          );
+                        }));
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: Stack(
+                            children: [
+                              Image(
+                                image: NetworkImage('${allDocs![index]['imageUrl']}'),
+                                width: double.infinity,
+                                height: 200,
+                                fit: BoxFit.cover,
+                              ),
+                              Positioned(
+                                top: 145,
+                                left: 20,
+                                child: BorderedText(
+                                  strokeColor: Colors.black,
+                                  strokeWidth: 2,
+                                  strokeCap: StrokeCap.butt,
+                                  strokeJoin: StrokeJoin.bevel,
+                                  child: Text(
+                                    '${allDocs![index]['Name']}',
+                                    maxLines: 2,
+                                    style: TextStyle(
+                                      fontSize: 25,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ), //Done
+                            ],
+                          ),
+                        ),
                       ),
                     ),
-                    SizedBox(
+                    separatorBuilder: (context, index) => Container(
                       height: 10,
                     ),
-                    Expanded(
-                      child: ListView.separated(
-                        itemBuilder: (context, index) => CustomImageItem(
-                            index, context,
-                            placeModel: placeModelList[index]),
-                        separatorBuilder: (context, index) => SizedBox(
-                          height: 10,
-                        ),
-                        itemCount: placeModelList.length,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }
-          return Scaffold(
-            body: Center(
+                    itemCount: allDocs.length,
+                  ),
+                ],
+              );
+            }
+            return Center(
                 child: CircularProgressIndicator(
-              color: Colors.orange,
-            )),
-          );
-        });
+                  color: Colors.orange,
+                ));
+          }),
+    );
   }
 }
 
-//  Container(width: 200, height: 200, child: Image(image: NetworkImage('https://wallpaperaccess.com/full/235503.jpg'),fit: BoxFit.fitHeight,)),
-//         Image(image: NetworkImage('https://outdoortrip-web.s3.eu-central-1.amazonaws.com/4650-night-at-the-egyptian-museum-private-tour-in-cairo/night-at-the-egyptian-museum-private-tour-in-cairo.62406b97be5d6-full.jpg'),fit: BoxFit.fitHeight,),
-//         Image(image: NetworkImage('https://assets.traveltriangle.com/blog/wp-content/uploads/2018/07/Valley-of-Kings-Luxor-egypt.jpg'),fit: BoxFit.fitHeight,),
-//         Image(image: NetworkImage('https://assets.traveltriangle.com/blog/wp-content/uploads/2018/07/Citadel-of-Saladin-egypt.jpg'),fit: BoxFit.fitHeight,),
-//         Image(image: NetworkImage('https://assets.traveltriangle.com/blog/wp-content/uploads/2018/07/Rock-Temples-of-Abu-Simbel-egypt.jpg'),fit: BoxFit.fitHeight,),
-//         Image(image: NetworkImage('https://assets.traveltriangle.com/blog/wp-content/uploads/2018/07/White-Desert-egypt.jpg'),fit: BoxFit.fitHeight,),
+

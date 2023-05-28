@@ -1,5 +1,6 @@
 
 import 'package:TourGuideApp/screens/places/all_places_screen.dart';
+import 'package:TourGuideApp/screens/servicesProvider/cafes/all_cafes.dart';
 import 'package:TourGuideApp/screens/servicesProvider/churches/alll_churches.dart';
 import 'package:TourGuideApp/screens/servicesProvider/cinemas/all_cinemas_screen.dart';
 import 'package:TourGuideApp/screens/servicesProvider/hotels/all_hotels_screen.dart';
@@ -36,7 +37,7 @@ class CityScreen extends StatelessWidget {
     AllMosques(cityDocId: cityDocId),
     AllChurches(cityDocId: cityDocId),
     AllTourCompanies(cityDocId: cityDocId),
-    AllCafes(cityDocId: cityDocId),
+    AllCinemas(cityDocId: cityDocId),
 
   ];
 

@@ -1,7 +1,6 @@
 
 import 'package:TourGuideApp/screens/bottomNavScreens/account_screen.dart';
 import 'package:TourGuideApp/screens/homePage/all_cities_screen.dart';
-import 'package:TourGuideApp/screens/homePage/best_location_screen.dart';
 import 'package:TourGuideApp/screens/homePage/home_screen.dart';
 import 'package:TourGuideApp/screens/login/login_screen.dart';
 import 'package:TourGuideApp/screens/login/register_screen.dart';
@@ -35,7 +34,6 @@ class MyApp extends StatelessWidget {
         HomePage.id         : (context) =>     const HomePage(),
         AllCities.id        : (context) =>     const AllCities(),
         ServicesProvider.id : (context) =>           ServicesProvider(),
-        BestLocations.id    : (context) =>     const BestLocations(),
         TestPage.id             : (context) => TestPage(),
         AccountScreen.id : (context) => AccountScreen(),
       },
@@ -55,7 +53,8 @@ class MyApp extends StatelessWidget {
         ),
         textTheme: GoogleFonts.cairoTextTheme(
           Theme.of(context).textTheme,
-        ), colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.blue).copyWith(background: Colors.black),
+        ),
+        colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.orange).copyWith(background: Colors.black),
       ),
       initialRoute: HomePage.id,
     );

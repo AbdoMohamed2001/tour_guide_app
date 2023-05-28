@@ -33,11 +33,7 @@ class _HotelScreenState extends State<HotelScreen> {
   bool isRated = false;
   Color color = Colors.white;
   Color isRatedColor = Colors.black;
-  // Future<void> _launchUrl() async {
-  //   if (!await launchUrl(widget._url)) {
-  //     throw Exception('Could not launch ${widget._url}');
-  //   }
-  // }
+  final dataKey = new GlobalKey();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -54,6 +50,7 @@ class _HotelScreenState extends State<HotelScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               CustomImage(
+                dataKey: dataKey,
                 imagesLength: '+2',
                 fontSize: 24,
                 imageUrl:widget.hotelData[widget.currentIndex]['Imageurl'],
@@ -62,28 +59,32 @@ class _HotelScreenState extends State<HotelScreen> {
                 itemLocation:  widget.hotelData[widget.currentIndex]['cityName'],
               ),
               kSizedBox,
+              //Location and google map
               Padding(
                 padding: const EdgeInsets.only(right: 8.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          width: 250,
-                          child: Text(
-                            widget.hotelData[widget.currentIndex]['Address'],
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                    //location
+                    Container(
+                      width: 250,
+                      child: Text(
+                        widget.hotelData[widget.currentIndex]['Address'],
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
                         ),
-                      ],
+                      ),
                     ),
+                    //google map
                     GestureDetector(
-                      onTap: (){},
+                      onTap: ()async {
+                        var url = Uri.parse(widget.hotelData[widget.currentIndex]['mapUrl']
+                        );
+                        if (await canLaunchUrl(url,)) {
+                          await launchUrl(url);
+                        };
+                      },
                       child: Container(
                         child: Image.asset('assets/images/googlemaps.png',
                           width: 50,
@@ -96,6 +97,7 @@ class _HotelScreenState extends State<HotelScreen> {
                 ),
               ),
               SizedBox(height: 10,),
+              //rate and stars
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -121,10 +123,7 @@ class _HotelScreenState extends State<HotelScreen> {
                   ),
                 ],
               ),
-              const SizedBox(
-                height: 10,
-              ),
-              //Features
+              SizedBox(height: 10,),
               const Text(
                 'Features',
                 style: TextStyle(
@@ -269,8 +268,8 @@ class _HotelScreenState extends State<HotelScreen> {
               SizedBox(height: 10,),
               GestureDetector(
                 onTap: ()async {
-                  var url = Uri.parse(
-                      'https://goo.gl/maps/WA6j2X5mGqDKDeBZ9');
+                  var url = Uri.parse(widget.hotelData[widget.currentIndex]['booking']
+                  );
                   if (await canLaunchUrl(url,)) {
                     await launchUrl(url);
                   };
@@ -279,7 +278,7 @@ class _HotelScreenState extends State<HotelScreen> {
                   width: 120,
                   height: 60,
                   color: Colors.transparent,
-                  child: Image.asset('assets/images/booking2.png'),
+                  child: Image.asset('assets/images/booking.png'),
                 ),
               ),
               SizedBox(height: 10,),
@@ -288,6 +287,7 @@ class _HotelScreenState extends State<HotelScreen> {
                 'Contact',
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
+              //Contact website and phone number
               Container(
                 width: double.infinity,
                 color: const Color(0xfff1f1f1),
@@ -302,11 +302,32 @@ class _HotelScreenState extends State<HotelScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children:  [
                           Text('Web Site'),
-                          Text(
-                            widget.hotelData[widget.currentIndex]['Email'],
-                            style: TextStyle(
-                              decoration: TextDecoration.underline,
-                              fontWeight: FontWeight.bold,
+                          GestureDetector(
+                            onTap: ()async{
+                              String? encodeQueryParameters(Map<String, String> params) {
+                                return params.entries
+                                    .map((MapEntry<String, String> e) =>
+                                '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}')
+                                    .join('&');
+                              }
+                              final Uri emailUrl= Uri(
+                                scheme: 'mailto',
+                                path: 'abdo.mohammed1778@gmail.com',
+                                query: encodeQueryParameters(<String, String>{
+                                  'subject': 'Example Subject & Symbols are allowed!',
+                                }),
+                              );
+                                  //'mailto:${toEmail}?subject=${Uri.encodeFull(subject)}&body=${message}';
+                              if(await canLaunchUrl(emailUrl)){
+                                await launchUrl(emailUrl);
+                              }
+                            },
+                            child: Text(
+                              widget.hotelData[widget.currentIndex]['Email'],
+                              style: TextStyle(
+                                decoration: TextDecoration.underline,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           )
                         ],
@@ -329,11 +350,32 @@ class _HotelScreenState extends State<HotelScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children:  [
                           Text('Phone nubmer'),
-                          Text(
-                            widget.hotelData[widget.currentIndex]['Phone'].toString(),
-                            style: TextStyle(
-                              decoration: TextDecoration.underline,
-                              fontWeight: FontWeight.bold,
+                          GestureDetector(
+                            onTap: ()async{
+                              String? encodeQueryParameters(Map<String, String> params) {
+                                return params.entries
+                                    .map((MapEntry<String, String> e) =>
+                                '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}')
+                                    .join('&');
+                              }
+                              final Uri emailUrl= Uri(
+                                scheme: 'mailto',
+                                path: 'abdo.mohammed1778@gmail.com',
+                                query: encodeQueryParameters(<String, String>{
+                                  'subject': 'Example Subject & Symbols are allowed!',
+                                }),
+                              );
+                              //'mailto:${toEmail}?subject=${Uri.encodeFull(subject)}&body=${message}';
+                              if(await canLaunchUrl(emailUrl)){
+                                await launchUrl(emailUrl);
+                              }
+                            },
+                            child: Text(
+                              widget.hotelData[widget.currentIndex]['Phone'].toString(),
+                              style: TextStyle(
+                                decoration: TextDecoration.underline,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           )
                         ],
@@ -349,40 +391,96 @@ class _HotelScreenState extends State<HotelScreen> {
                 ),
               ),
               kSizedBox,
+             //Images
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Container(
-                    child:
-                    widget.hotelData[widget.currentIndex]['images'][0].toString().isEmpty ?
-                    Text(''):
-                    Image.network(widget.hotelData[widget.currentIndex]['images'][0],
+                  //image 1
+                   GestureDetector(
+                     onTap: (){},
+                     child: Container(
+                       key: dataKey,
+                       child:
+                       widget.hotelData[widget.currentIndex]['images'][0].toString().isEmpty ?
+                       Text(''):
+                       Image.network(widget.hotelData[widget.currentIndex]['images'][0],
+                         width: 150,
+                         height: 200,
+                         fit: BoxFit.cover,
+                       ),
+
+                     ),
+                   ),
+                  //image 2
+                  GestureDetector(
+                    onTap: (){
+                      Navigator.push(context, MaterialPageRoute(builder: (context){
+                        return DetailScreen(hotelData: widget.hotelData, currentIndex: widget.currentIndex);
+                      }));
+                    },
+                    child: Container(
+                      child:
+                      widget.hotelData[widget.currentIndex]['images'].length == 1 ?
+                      Text(''):
+
+                      Image.network(widget.hotelData[widget.currentIndex]['images'][1],
                       width: 150,
-                      height: 200,
-                      fit: BoxFit.cover,
+                        height: 200,
+                        fit: BoxFit.cover,
+                      ),
+
                     ),
-
-                  ),
-                  Container(
-                    child:
-                    widget.hotelData[widget.currentIndex]['images'].length == 1 ?
-                    Text(''):
-
-                    Image.network(widget.hotelData[widget.currentIndex]['images'][1],
-                    width: 150,
-                      height: 200,
-                      fit: BoxFit.cover,
-                    ),
-
                   ),
                 ],
               ),
               kSizedBox,
 
-
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+
+class DetailScreen extends StatelessWidget {
+  DetailScreen({
+    Key? key,
+    required this.hotelData,
+    required this.currentIndex,
+  }) : super(key: key);
+
+  List<QueryDocumentSnapshot> hotelData;
+  int currentIndex;
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          onPressed: (){
+            Navigator.pop(context);
+          },
+          icon: Icon(Icons.arrow_back_ios_new_rounded,
+            color: Colors.black,
+          ),
+        ),
+      ),
+      body: GestureDetector(
+        child: Container(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          child: Hero(
+            tag: 'imageHero',
+            child: Image.network(
+              hotelData[currentIndex]['images'][1],
+              fit: BoxFit.cover,
+            ),
+          ),
+        ),
+        onTap: () {
+          Navigator.pop(context);
+        },
       ),
     );
   }
