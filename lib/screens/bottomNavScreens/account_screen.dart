@@ -1,13 +1,18 @@
-import 'package:TourGuideApp/constants.dart';
+import 'package:TourGuideApp/screens/login/welcome_screen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class AccountScreen extends StatelessWidget {
   static String id = 'AccountScreen';
 
-  const AccountScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    FirebaseAuth auth = FirebaseAuth.instance;
+    var currentUser = FirebaseAuth.instance.currentUser?.uid;
+    final CollectionReference users =
+    FirebaseFirestore.instance.collection('users');
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -22,104 +27,117 @@ class AccountScreen extends StatelessWidget {
           ),
         ),
       ),
-      body: SingleChildScrollView(
+      body: FutureBuilder<DocumentSnapshot>(
+        future: users.doc(currentUser).get(),
+        builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot){
+          if (snapshot.data?.data() == null) {
+            return Scaffold(
+          body: Center(
+          child: Text('No data to shown'),
+          ),
+          );
+          }
+          else if (snapshot.hasError) {
+            return Scaffold(
+              body: Center(
+                child: Text('111111111111111111111'),
+              ),
+            );
 
-        child: Column(
-          children: [
-            Text('Edit profile',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-            ),
-            Image(
-              image: NetworkImage(
-                  'https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png'),
-              width: 100,
-              height: 100,
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            Padding(
+          }
+          else if (snapshot.connectionState == ConnectionState.done) {
+            Map<String, dynamic> data = snapshot.data!.data() as Map<String, dynamic>;
+            return Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10.0),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  SizedBox(height: 5,),
-                  SizedBox(
-                    height: 40,
-                    child: TextFormField(
-                      decoration: InputDecoration(
-                        labelText: 'Name',
-                        fillColor: Colors.grey[300],
-                        filled: true,
-                        contentPadding: EdgeInsets.symmetric(horizontal: 10),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(20),
+                  ClipRRect(
+                    borderRadius: BorderRadius.all(Radius.circular(100),),
+                    child: Image.network(
+                        height: 200,
+                        width: 200,
+                        data['photoUrl'].toString(),),
+                  ),
+                  SizedBox(height: 20,),
+                  Row(
+                    children: [
+                      Container(
+                        width: 110,
+                        child: Text('User name',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
+                        ),
+                      ),
+                      Text(data['username'],
+                      style: TextStyle(
+                        fontSize: 16,
+                      ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 20,),
+                  Row(
+                    children: [
+                      Container(
+                        width: 110,
+                        child: Center(
+                          child: Text('Email',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ),
-                  kSizedBox,
-                  SizedBox(
-                    height: 40,
-                    child: TextFormField(
-                      decoration: InputDecoration(
-                        labelText: 'Email',
-                        fillColor: Colors.grey[300],
-                        filled: true,
-                        contentPadding: EdgeInsets.symmetric(horizontal: 10),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(20),
-                          ),
+                      Text(data['email'],
+                        style: TextStyle(
+                          fontSize: 15,
                         ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 20,),
+                  GestureDetector(
+                    onTap: () async {
+                      await FirebaseAuth.instance.signOut();
+                      Navigator.pushReplacement( context, MaterialPageRoute(builder: (context){
+                        return WelcomeScreen(title: '');
+                      }));
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 100.0),
+                      child: Container(
+                        width: double.infinity,
+                        height: 35,
+                        decoration: BoxDecoration(
+                          color: Colors.orange[300],
+                          borderRadius: BorderRadius.all(Radius.circular(8),),
+                        ),
+                        child: Center(child: Text('Sign out')),
                       ),
                     ),
                   ),
-                  kSizedBox,
-                  SizedBox(
-                    height: 40,
-                    child: TextFormField(
-                      decoration: InputDecoration(
-                        labelText: 'UserName',
-                        fillColor: Colors.grey[300],
-                        filled: true,
-                        contentPadding: EdgeInsets.symmetric(horizontal: 10),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(20),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  kSizedBox,
-                  SizedBox(
-                    height: 40,
-                    child: TextFormField(
-                      decoration: InputDecoration(
-                        labelText: 'Password',
-                        fillColor: Colors.grey[300],
-                        filled: true,
-                        contentPadding: EdgeInsets.symmetric(horizontal: 10),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(20),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-
                 ],
               ),
+            );
+          }
+          else if (snapshot.connectionState == ConnectionState.waiting){
+            return Scaffold(
+              body: Center(
+                child: CircularProgressIndicator(color: Colors.orange,),
+              ),
+            );
+          }
+          else return Scaffold(
+            body: Center(
+              child: Text('55555555555555555'),
             ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }

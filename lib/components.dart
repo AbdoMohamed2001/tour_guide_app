@@ -1,27 +1,11 @@
 // ignore_for_file: must_be_immutable
 import 'package:TourGuideApp/constants.dart';
-import 'package:TourGuideApp/models/place_model.dart';
-import 'package:TourGuideApp/screens/city_screen.dart';
-import 'package:TourGuideApp/screens/places/place_screen.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:bordered_text/bordered_text.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
-//------------------------------------------------------------------------------------
-class CustomAppBar extends StatelessWidget {
-  const CustomAppBar({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return PreferredSize(
-      preferredSize: const Size.fromHeight(-0.1),
-      child: AppBar(
-        elevation: 0,
-      ),
-    );
-  }
-}
 //------------------------------------------------------------------------------------
 class CustomTextField extends StatefulWidget {
   CustomTextField({
@@ -103,77 +87,37 @@ class _CustomTextFieldState extends State<CustomTextField> {
     );
   }
 }
+
 //------------------------------------------------------------------------------------
-
-class SmallContainer extends StatelessWidget {
-  final double width;
-  final double height;
-  final Color boxDecorationBorderColor;
-  final String? imageUrl;
-
-  const SmallContainer({
-    Key? key,
-    required this.width,
-    required this.height,
-    required this.boxDecorationBorderColor,
-    required this.imageUrl,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: width,
-      height: height,
-      decoration: BoxDecoration(
-        border: Border.all(
-          color: boxDecorationBorderColor,
-          width: 0.8,
-        ),
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(10),
-        child: Image(
-          fit: BoxFit.cover,
-          image: NetworkImage(imageUrl!),
-          //
-        ),
-      ),
-    );
-  }
-}
-//------------------------------------------------------------------------------------
-
 class ServiceProviderItem extends StatelessWidget {
   final double? width;
   final double? height;
   final Color boxDecorationColor;
   final double boxDecorationBorderRadius;
-  final IconData icon;
-  final Color iconColor;
-  final double iconSize;
   final String text;
   final void Function()? onPressed;
+  final String fileName;
 
   ServiceProviderItem({
     Key? key,
     this.height,
     this.width,
     required this.onPressed,
-    required this.iconSize,
     required this.boxDecorationColor,
     required this.boxDecorationBorderRadius,
-    required this.icon,
-    required this.iconColor,
     required this.text,
+    required this.fileName,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    double screenHeight = MediaQuery.of(context).size.height;
     return GestureDetector(
       onTap: onPressed,
       child: Container(
-        width: 155,
-        height: 100,
+        width: screenWidth * 0.4,
+        height: screenHeight * 0.15,
         decoration: BoxDecoration(
           color: boxDecorationColor,
           borderRadius:
@@ -194,17 +138,21 @@ class ServiceProviderItem extends StatelessWidget {
                       Radius.circular(8),
                     ),
                   ),
-                  child: Icon(
-                    icon,
-                    color: iconColor,
-                    size: iconSize,
+                  child: IconButton(
+                    icon: SvgPicture.asset(
+                      'assets/icons/$fileName.svg',
+                      fit: BoxFit.cover,
+
+                    ),
+                    onPressed: () {},
+                    iconSize: 50,
                   )),
               Text(
                 text,
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                   color: Colors.white,
-                  fontSize: 16,
+                  fontSize: 14.5,
                 ),
               ),
             ],
@@ -214,8 +162,8 @@ class ServiceProviderItem extends StatelessWidget {
     );
   }
 }
-//------------------------------------------------------------------------------------
 
+//------------------------------------------------------------------------------------
 class CustomImage extends StatefulWidget {
   CustomImage({
     Key? key,
@@ -226,6 +174,7 @@ class CustomImage extends StatefulWidget {
     required this.fontSize,
     required this.imagesLength,
     required this.dataKey,
+    this.favouriteFunction,
   }) : super(key: key);
   String imageUrl;
   String? endImageUrl;
@@ -234,7 +183,9 @@ class CustomImage extends StatefulWidget {
   String? description;
   double fontSize;
   String imagesLength;
+
   GlobalKey dataKey = new GlobalKey();
+  Function()? favouriteFunction;
 
   @override
   State<CustomImage> createState() => _CustomImageState();
@@ -260,7 +211,7 @@ class _CustomImageState extends State<CustomImage> {
           ), //Done
           //Pyramids
           Positioned(
-            top: 265,
+            top: 245,
             left: 20,
             child: BorderedText(
               strokeColor: Colors.black,
@@ -280,7 +231,7 @@ class _CustomImageState extends State<CustomImage> {
           ), //Done
           //Giza
           Positioned(
-            top: 300,
+            top: 280,
             left: 20,
             child: BorderedText(
               strokeColor: Colors.black,
@@ -296,13 +247,12 @@ class _CustomImageState extends State<CustomImage> {
               ),
             ),
           ), //Done
-          //Top Image
           //End Image
           Positioned(
             top: 290,
             right: 20,
             child: GestureDetector(
-              onTap: (){
+              onTap: () {
                 Scrollable.ensureVisible(widget.dataKey.currentContext!);
               },
               child: Container(
@@ -316,7 +266,6 @@ class _CustomImageState extends State<CustomImage> {
                   ),
                 ),
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
                   child: Stack(
                     fit: StackFit.passthrough,
                     children: [
@@ -327,17 +276,140 @@ class _CustomImageState extends State<CustomImage> {
                         ),
                       ),
                       Center(
-                        child: Text(
-                          widget.imagesLength,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                        child: BorderedText(
+                          strokeColor: Colors.black,
+                          strokeWidth: 1.5,
+                          strokeCap: StrokeCap.butt,
+                          strokeJoin: StrokeJoin.bevel,
+                          child: Text(
+                            '+${widget.imagesLength}',
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
                       ),
                     ],
                   ),
+                ),
+              ),
+            ),
+          ),
+          //Favourite
+          Positioned(
+            right: 25,
+            top: 10,
+            child: IconButton(
+              onPressed: widget.favouriteFunction,
+              icon: Icon(
+                Icons.favorite,
+                color: color,
+                size: 40,
+              ),
+            ),
+          ),
+          //Back
+          Positioned(
+            left: 10,
+            top: 10,
+            child: IconButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              icon: const Icon(
+                Icons.arrow_back_ios_new,
+                color: Colors.white,
+                size: 40,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+//------------------------------------------------------------------------------------
+class CustomImageWithoutEndImage extends StatefulWidget {
+  CustomImageWithoutEndImage({
+    Key? key,
+    required this.imageUrl,
+    required this.itemName,
+    required this.itemLocation,
+    required this.fontSize,
+    required this.imagesLength,
+    required this.dataKey,
+    this.addToFavourite,
+  }) : super(key: key);
+  String imageUrl;
+  String? itemName;
+  String? itemLocation;
+  String? description;
+  double fontSize;
+  String imagesLength;
+  GlobalKey dataKey = new GlobalKey();
+  Function? addToFavourite;
+
+  @override
+  State<CustomImageWithoutEndImage> createState() =>
+      _CustomImageWithoutEndImageState();
+}
+
+class _CustomImageWithoutEndImageState
+    extends State<CustomImageWithoutEndImage> {
+  bool isFavourite = false;
+  bool isRated = false;
+  Color color = Colors.white;
+  Color isRatedColor = Colors.black;
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(10),
+      child: Stack(
+        children: [
+          Image(
+            width: double.infinity,
+            height: 350,
+            fit: BoxFit.cover,
+            image: NetworkImage(widget.imageUrl),
+          ),
+          //Pyramids
+          Positioned(
+            top: 245,
+            left: 20,
+            child: BorderedText(
+              strokeColor: Colors.black,
+              strokeWidth: 2,
+              strokeCap: StrokeCap.butt,
+              strokeJoin: StrokeJoin.bevel,
+              child: Text(
+                widget.itemName!,
+                maxLines: 2,
+                style: TextStyle(
+                  fontSize: widget.fontSize,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+          //Giza
+          Positioned(
+            top: 280,
+            left: 20,
+            child: BorderedText(
+              strokeColor: Colors.black,
+              strokeWidth: 2,
+              strokeCap: StrokeCap.butt,
+              strokeJoin: StrokeJoin.bevel,
+              child: Text(
+                widget.itemLocation!,
+                style: TextStyle(
+                  fontSize: widget.fontSize,
+                  color: Colors.white,
                 ),
               ),
             ),
@@ -382,290 +454,87 @@ class _CustomImageState extends State<CustomImage> {
     );
   }
 }
-//------------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------------
-
-bool isFavourite = false;
-bool isRated = false;
-Color color = Colors.white;
-Color isRatedColor = Colors.black;
-IconData starIcon = Icons.star_rounded;
-Color starColor = Colors.yellow;
-
 
 //--------------------------------------------------------------------------------
-
 void showSnackBar(BuildContext context, String text) {
   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
     content: Text(text),
   ));
 }
 
-//-------------------------------------------------------------
-
-class CustomImageItem extends StatelessWidget {
-  CustomImageItem(
-    this.index,
-    this.context, {
-    Key? key,
-    required this.placeModel,
-  }) : super(key: key);
-  BuildContext context;
-  PlaceModel placeModel;
-  int index;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.pushNamed(context, PlacePage.id);
-      },
-      child: ClipRRect(
-        child: Stack(
-          children: [
-            Image(
-              width: double.infinity,
-              height: 220,
-              fit: BoxFit.cover,
-              image: NetworkImage(bestLocationsImage[index]),
-            ), //Done
-            //Pyramids
-            Positioned(
-              top: 140,
-              left: 20,
-              child: BorderedText(
-                strokeColor: Colors.black,
-                strokeWidth: 2,
-                strokeCap: StrokeCap.butt,
-                strokeJoin: StrokeJoin.bevel,
-                child: Text(
-                  placeModel.name,
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ), //Done
-            //Giza
-            Positioned(
-              top: 165,
-              left: 20,
-              child: BorderedText(
-                strokeColor: Colors.black,
-                strokeWidth: 2,
-                strokeCap: StrokeCap.butt,
-                strokeJoin: StrokeJoin.bevel,
-                child: Text(
-                  'Cairo',
-                  style: TextStyle(
-                    fontSize: 24,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ), //Done
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-List<String> bestLocationsImage = [
-  'https://static01.nyt.com/images/2022/09/13/science/30TB-PYRAMIDS1/30TB-PYRAMIDS1-superJumbo.jpg',
-  'https://assets.traveltriangle.com/blog/wp-content/uploads/2018/07/Valley-of-Kings-Luxor-egypt.jpg',
-  'https://assets.traveltriangle.com/blog/wp-content/uploads/2018/07/Citadel-of-Saladin-egypt.jpg',
-  'https://assets.traveltriangle.com/blog/wp-content/uploads/2018/07/Citadel-of-Saladin-egypt.jpg',
-  'https://assets.traveltriangle.com/blog/wp-content/uploads/2018/07/Citadel-of-Saladin-egypt.jpg',
-];
-List<String> bestLocationsName = [
-  'Pyramids',
-  'Valley-of-Kings',
-  'Citadel-of-Saladin',
-];
-List<String> bestLocationsLocation = [
-  'Giza',
-  'Luxor',
-  'Alex',
-];
-
-//-------------------------------------------------------------
-
-class NearlyPlaceItem extends StatelessWidget {
-  NearlyPlaceItem({
-    Key? key,
-    required this.containerColor,
-    required this.iconName,
-    required this.iconColor,
-    required this.containerName,
-  }) : super(key: key);
-
-  final Color containerColor;
-  final IconData iconName;
-  final Color iconColor;
-  final String containerName;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 150,
-      height: 50,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(10)),
-      ),
-      child: Container(
-        width: 35,
-        height: 35,
-        decoration: BoxDecoration(
-          color: containerColor,
-          borderRadius: BorderRadius.all(
-            Radius.circular(8),
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.only(right: 6.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 8.0),
-                child: Container(
-                  width: 35,
-                  height: 35,
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(8),
-                    ),
-                  ),
-                  child: Center(
-                      child: Icon(
-                    iconName,
-                    color: iconColor,
-                  )),
-                ),
-              ),
-              SizedBox(
-                width: 15,
-              ),
-              Text(
-                containerName,
-                style: TextStyle(
-                  color: Colors.white,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+void showToast({required String msg}) {
+  Fluttertoast.showToast(
+      msg: msg,
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.SNACKBAR,
+      timeInSecForIosWeb: 1,
+      backgroundColor: Colors.orange[300],
+      textColor: Colors.white,
+      fontSize: 14.0);
 }
 
 //-------------------------------------------------------------
-
-class CityFeatures extends StatelessWidget {
-  CityFeatures({
+class BuildAllItemNew extends StatelessWidget {
+  BuildAllItemNew({
     Key? key,
-    required this.index,
-    required this.pageName,
-  }) : super(key: key);
-
-  final int index;
-  final String pageName;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.pushNamed(context, pageName);
-      },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 4.0),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(10),
-          child: Stack(
-            children: [
-              Image(
-                width: double.infinity,
-                height: 150,
-                fit: BoxFit.cover,
-                image: NetworkImage('containerImage[index]'),
-              ), //Done
-              //Pyramids
-              Positioned(
-                top: 100,
-                left: 20,
-                child: BorderedText(
-                  strokeColor: Colors.black,
-                  strokeWidth: 2,
-                  strokeCap: StrokeCap.butt,
-                  strokeJoin: StrokeJoin.bevel,
-                  child: Text(
-                    'containerName[index]',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ), //Done
-              //Giza
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-//-------------------------------------------------------------
-
-//-------------------------------------------------------------
-class BuildAllCitiesItem extends StatelessWidget {
-  List<QueryDocumentSnapshot>? allDocs;
-  int index;
-  final QuerySnapshot querySnapshot;
-  final DocumentReference cityDocId;
-  BuildAllCitiesItem({
-    Key? key,
-    required this.index,
     required this.allDocs,
-    required this.querySnapshot,
-    required this.cityDocId,
+    required this.index,
+    required this.pushedPage,
   }) : super(key: key);
+  var allDocs;
+  int index;
+  Widget pushedPage;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return CityScreen(
-            cityData: allDocs!,
-            currentIndex: index,
-            querySnapshot: querySnapshot,
-            cityDocId: cityDocId,
-          );
+          return pushedPage;
         }));
       },
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 4.0),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(10),
+        padding: const EdgeInsets.symmetric(horizontal: 6.0),
+        child: Container(
+          decoration: BoxDecoration(
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.shade500,
+                spreadRadius: 1,
+                blurRadius: 3,
+                offset: const Offset(0, 1),
+              ),
+            ],
+          ),
           child: Stack(
             children: [
               Image(
-                image: NetworkImage('${allDocs![index]['imageUrl']}'),
+                image: NetworkImage(
+                  '${allDocs[index]['imageUrl']}',
+                ),
+                loadingBuilder: (context, child, loadingProgress) {
+                  if (loadingProgress == null) {
+                    return child;
+                  } else {
+                    return Center(
+                      child: Container(
+                        width: double.infinity,
+                        height: 230,
+                        child: Center(
+                          child: CircularProgressIndicator(
+                            color: Colors.orange,
+                          ),
+                        ),
+                      ),
+                    );
+                  }
+                },
                 width: double.infinity,
-                height: 200,
+                height: 230,
                 fit: BoxFit.cover,
               ),
               Positioned(
-                top: 145,
+                top: 160,
                 left: 20,
                 child: BorderedText(
                   strokeColor: Colors.black,
@@ -673,16 +542,33 @@ class BuildAllCitiesItem extends StatelessWidget {
                   strokeCap: StrokeCap.butt,
                   strokeJoin: StrokeJoin.bevel,
                   child: Text(
-                    '${allDocs![index]['cityName']}',
+                    '${allDocs[index]['name']}',
                     maxLines: 2,
                     style: TextStyle(
-                      fontSize: 25,
+                      fontSize: 20,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
                   ),
                 ),
               ), //Done
+              Positioned(
+                top: 190,
+                left: 20,
+                child: BorderedText(
+                  strokeColor: Colors.black,
+                  strokeWidth: 2,
+                  strokeCap: StrokeCap.butt,
+                  strokeJoin: StrokeJoin.bevel,
+                  child: Text(
+                    '${allDocs[index]['cityName']}',
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
         ),
@@ -692,9 +578,94 @@ class BuildAllCitiesItem extends StatelessWidget {
 }
 
 //---------------------------------------------
+class BuildMallItem extends StatelessWidget {
+  BuildMallItem({
+    Key? key,
+    required this.allDocs,
+    required this.currentIndex,
+    required this.pushedPage,
+  }) : super(key: key);
+  List<QueryDocumentSnapshot> allDocs;
+  int currentIndex;
 
-class BuildAllItemNew extends StatelessWidget {
-  BuildAllItemNew({
+  Widget pushedPage;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return pushedPage;
+        }));
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 6.0),
+        child: Container(
+          decoration: BoxDecoration(
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.shade700,
+                spreadRadius: 1,
+                blurRadius: 4,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Stack(
+            children: [
+              Image(
+                image: NetworkImage('${allDocs[currentIndex]['imageUrl']}'),
+                width: double.infinity,
+                height: 200,
+                fit: BoxFit.cover,
+              ),
+              Positioned(
+                top: 130,
+                left: 20,
+                child: BorderedText(
+                  strokeColor: Colors.black,
+                  strokeWidth: 2,
+                  strokeCap: StrokeCap.butt,
+                  strokeJoin: StrokeJoin.bevel,
+                  child: Text(
+                    '${allDocs[currentIndex]['name']}',
+                    maxLines: 2,
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ), //Done
+              Positioned(
+                top: 160,
+                left: 20,
+                child: BorderedText(
+                  strokeColor: Colors.black,
+                  strokeWidth: 2,
+                  strokeCap: StrokeCap.butt,
+                  strokeJoin: StrokeJoin.bevel,
+                  child: Text(
+                    '${allDocs[currentIndex]['cityName']}',
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+//---------------------------------------------
+class BuildAllOptionsNew extends StatelessWidget {
+  BuildAllOptionsNew({
     Key? key,
     required this.allDocs,
     required this.index,
@@ -725,17 +696,16 @@ class BuildAllItemNew extends StatelessWidget {
               ),
             ],
           ),
-
           child: Stack(
             children: [
-
               Image(
-                image: NetworkImage('${allDocs[index]['Imageurl']}',),
+                image: NetworkImage(
+                  '${allDocs[index]['imageUrl']}',
+                ),
                 loadingBuilder: (context, child, loadingProgress) {
                   if (loadingProgress == null) {
                     return child;
-                  }
-                  else {
+                  } else {
                     return Center(
                       child: Container(
                         width: double.infinity,
@@ -752,7 +722,6 @@ class BuildAllItemNew extends StatelessWidget {
                 width: double.infinity,
                 height: 220,
                 fit: BoxFit.cover,
-
               ),
               Positioned(
                 top: 140,
@@ -763,7 +732,7 @@ class BuildAllItemNew extends StatelessWidget {
                   strokeCap: StrokeCap.butt,
                   strokeJoin: StrokeJoin.bevel,
                   child: Text(
-                    '${allDocs[index]['Name']}',
+                    '${allDocs[index]['tourName']}',
                     maxLines: 2,
                     style: TextStyle(
                       fontSize: 20,
@@ -782,7 +751,7 @@ class BuildAllItemNew extends StatelessWidget {
                   strokeCap: StrokeCap.butt,
                   strokeJoin: StrokeJoin.bevel,
                   child: Text(
-                    '${allDocs[index]['cityName']}',
+                    '${allDocs[index]['state']}',
                     style: TextStyle(
                       fontSize: 20,
                       color: Colors.white,
@@ -798,6 +767,196 @@ class BuildAllItemNew extends StatelessWidget {
   }
 }
 
+//-------------------------------------------------------
+class BuildAllUpcomingEvents extends StatelessWidget {
+  BuildAllUpcomingEvents({
+    Key? key,
+    required this.allDocs,
+    required this.index,
+    required this.pushedPage,
+  }) : super(key: key);
+  var allDocs;
+  int index;
+  Widget pushedPage;
 
-//---------------------------------------------
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return pushedPage;
+        }));
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 6.0),
+        child: Container(
+          decoration: BoxDecoration(
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.shade700,
+                spreadRadius: 1,
+                blurRadius: 4,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Stack(
+            children: [
+              Image(
+                image: NetworkImage(
+                  '${allDocs[index]['imageUrl']}',
+                ),
+                loadingBuilder: (context, child, loadingProgress) {
+                  if (loadingProgress == null) {
+                    return child;
+                  } else {
+                    return Center(
+                      child: Container(
+                        width: double.infinity,
+                        height: 220,
+                        child: Center(
+                          child: CircularProgressIndicator(
+                            color: Colors.orange,
+                          ),
+                        ),
+                      ),
+                    );
+                  }
+                },
+                width: double.infinity,
+                height: 220,
+                fit: BoxFit.cover,
+              ),
+              Positioned(
+                top: 140,
+                left: 20,
+                child: BorderedText(
+                  strokeColor: Colors.black,
+                  strokeWidth: 2,
+                  strokeCap: StrokeCap.butt,
+                  strokeJoin: StrokeJoin.bevel,
+                  child: Text(
+                    '${allDocs[index]['name']}',
+                    maxLines: 2,
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ), //Done
+              Positioned(
+                top: 170,
+                left: 20,
+                child: BorderedText(
+                  strokeColor: Colors.black,
+                  strokeWidth: 2,
+                  strokeCap: StrokeCap.butt,
+                  strokeJoin: StrokeJoin.bevel,
+                  child: Text(
+                    '${allDocs[index]['location']}',
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
 
+//-------------------------------------------------------
+class DetailScreen extends StatelessWidget {
+  DetailScreen({
+    Key? key,
+    required this.data,
+    required this.currentIndex,
+    required this.ImageIndex,
+  }) : super(key: key);
+
+  List<QueryDocumentSnapshot> data;
+  int currentIndex;
+  int ImageIndex;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: Colors.black,
+          ),
+        ),
+      ),
+      body: GestureDetector(
+        child: Container(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          child: Hero(
+            tag: 'imageHero',
+            child: Image.network(
+              data[currentIndex]['images'][ImageIndex],
+              fit: BoxFit.cover,
+            ),
+          ),
+        ),
+        onTap: () {
+          Navigator.pop(context);
+        },
+      ),
+    );
+  }
+}
+
+class ImageView extends StatelessWidget {
+  ImageView({
+    required this.data,
+    required this.widgetDataAndIndex,
+    required this.currentIndex,
+    required this.ImageIndex,
+    this.dataKey,
+  });
+
+  int ImageIndex;
+  List<QueryDocumentSnapshot<Object?>> data;
+  int currentIndex;
+  QueryDocumentSnapshot<Object?> widgetDataAndIndex;
+  Key? dataKey;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return DetailScreen(
+            ImageIndex: ImageIndex,
+            data: data,
+            currentIndex: currentIndex,
+          );
+        }));
+      },
+      child: Container(
+        key: dataKey,
+        child: widgetDataAndIndex['images'][ImageIndex].toString().isEmpty
+            ? Text('')
+            : Image.network(
+                widgetDataAndIndex['images'][ImageIndex],
+                width: 150,
+                height: 200,
+                fit: BoxFit.cover,
+              ),
+      ),
+    );
+  }
+}
+//-------------------------------------------------------

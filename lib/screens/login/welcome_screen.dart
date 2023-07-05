@@ -1,3 +1,5 @@
+import 'package:TourGuideApp/resources/auth_methods.dart';
+import 'package:TourGuideApp/screens/homePage/home_screen.dart';
 import 'package:TourGuideApp/screens/login/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -20,7 +22,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     return Container(
       decoration: const BoxDecoration(
         image: DecorationImage(
-          image: AssetImage('assets/images/1.jpg'),
+          image: AssetImage('assets/images/welcome.jpg'),
           fit: BoxFit.cover,
         ),
       ),
@@ -40,11 +42,13 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             child: Center(
               child: Column(
                 children:[
+                  //----------------------------------------------------------------
                   const Image(
                     image: AssetImage('assets/images/applogo.png'),
                     width: 160,
                   ),
                   const SizedBox(height: 15,),
+                  //----------------------------------------------------------------
                   // Welcome
                   const Text(
                     'WELCOME TO',
@@ -77,6 +81,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     ],
                   ),
                   const SizedBox(height: 30,),
+                  //----------------------------------------------------------------
                   //Login
                   GestureDetector(
                     onTap: (){
@@ -93,6 +98,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     ),
                   ),
                   const SizedBox(height: 20,),
+                  //----------------------------------------------------------------
                   //Register
                   GestureDetector(
                     onTap: (){
@@ -107,6 +113,26 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       width: 220,
                       height: 40,
                       child: const Center(child: Text('SIGN UP')),
+                    ),
+                  ),
+                  SizedBox(height: 20,),
+                  //----------------------------------------------------------------
+                  //Guest
+                  GestureDetector(
+                    onTap: (){
+                      AuthMethods().anonymousUser();
+                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context){
+                        return HomePage();
+                      }));
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: (BorderRadius.circular(20)),
+                        color: Colors.white70,
+                      ),
+                      width: 190,
+                      height: 40,
+                      child:  Center(child: Text('Login as guest'.toUpperCase())),
                     ),
                   ),
 

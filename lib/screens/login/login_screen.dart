@@ -1,7 +1,7 @@
 import 'package:TourGuideApp/components.dart';
 import 'package:TourGuideApp/constants.dart';
 import 'package:TourGuideApp/resources/auth_methods.dart';
-import 'package:TourGuideApp/screens/homePage/home_screen.dart';
+import 'package:TourGuideApp/screens/login/forget_password.dart';
 import 'package:TourGuideApp/screens/login/register_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -98,16 +98,19 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                     kSizedBox,
+                    //-------------------------------------------------------------------
+                    //Email
                     CustomTextField(
                       controller: _emailController,
                       labelText: 'Email',
                       obscureText: false,
                       validator: (value) {
                         if (value!.isEmpty ||
-                            !RegExp(r'^([a-z\d_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,63})$')
+                            !RegExp(r'^([a-z\d_.-]+)@([\da-z.-]+)\.([a-z.]{2,63})$')
                                 .hasMatch(value)) {
                           return 'Enter correct Email';
                         }
+                        return null;
                       },
                       prefixIcon: const Icon(
                         Icons.email_outlined,
@@ -116,6 +119,8 @@ class _LoginPageState extends State<LoginPage> {
                       textInputType: TextInputType.emailAddress,
                     ),
                     kSizedBox,
+                    //-------------------------------------------------------------------
+                    //Password
                     CustomTextField(
                       controller: _passController,
                       labelText: 'Password',
@@ -130,7 +135,7 @@ class _LoginPageState extends State<LoginPage> {
                         return null;
                       },
                       prefixIcon: const Icon(
-                        Icons.email_outlined,
+                        Icons.lock_outline,
                         color: Colors.grey,
                       ),
                       suffixIcon: IconButton(
@@ -189,16 +194,25 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                     kSizedBox,
+                    //-------------------------------------------------------------------
+                    //Forget Password
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 25.0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text(
-                            'Forget password ?',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(context, MaterialPageRoute(builder: (context){
+                                return ForgetPasswordScreen();
+                              }));
+                            },
+                            child: const Text(
+                              'Forget password ?',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                              ),
                             ),
                           ),
                           GestureDetector(

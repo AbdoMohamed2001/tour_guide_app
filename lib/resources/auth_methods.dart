@@ -1,17 +1,70 @@
-import 'dart:typed_data';
-import 'package:TourGuideApp/resources/storage_methods.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:TourGuideApp/components.dart';
+import 'package:TourGuideApp/resources/storage_methods.dart';
 import 'package:TourGuideApp/screens/homePage/home_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class AuthMethods {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  //----------------------------------------------
+  Future<void> addToFavourite({
+    required String address,
+    required String cityName,
+    required String description,
+    required String imageUrl,
+    required List images,
+    required String mapUrl,
+    required String name,
+    required Map openingHours,
+    required Map tickets,
+    required double rate,
+    required var docID,
+    required BuildContext context,
+  }) async {
+    late var currentUser = _auth.currentUser;
+    CollectionReference _collectionReference =
+        FirebaseFirestore.instance.collection('favouritePlaces');
+    return _collectionReference
+        .doc(currentUser!.email)
+        .collection('Places')
+        .doc(docID)
+        .set({
+      "address": address,
+      'cityName': cityName,
+      'description': description,
+      'imageUrl': imageUrl,
+      'images': images,
+      'mapUrl': mapUrl,
+      'name': name,
+      'openingHours': 'openingHours',
+      'rate': rate,
+      'tickets': tickets,
+    }).then((
+      value,
+    ) => showToast(msg: 'Added To Favourite') );
+  }
+
+  //-----------------------------------------------------------------------
+
+  Future<void> deleteFromFavourite({
+    required var docID,
+    required BuildContext context,
+  }) async {
+    late var currentUser = _auth.currentUser;
+    CollectionReference _collectionReference =
+        FirebaseFirestore.instance.collection('favouritePlaces');
+    return _collectionReference
+        .doc(currentUser!.email)
+        .collection('places')
+        .doc(docID)
+        .delete()
+        .then((value) =>  showToast(msg:'Removed From Favourite'));
+  }
+
+  //-----------------------------------------------------------------------
   //sign up user
   Future<String> signUpUser({
     required BuildContext context,
@@ -27,7 +80,6 @@ class AuthMethods {
         email: email,
         password: password,
       );
-      print(credential.user!.uid);
       String photoUrl = await StorageMethods()
           .uploadImageToStorage('profilePics', file, false);
       //Store user to database
@@ -35,20 +87,16 @@ class AuthMethods {
         'username': userName,
         'email': email,
         'uid': credential.user!.uid,
-        'photoUrl': photoUrl,
+        'photoUrl' : photoUrl,
       });
       res = 'Success';
-      showSnackBar(context, 'Registered Successfully');
-      Navigator.pushNamed(context, HomePage.id);
+      showToast(msg: 'Registered Successfully');
+      Navigator.pushReplacementNamed(context, HomePage.id);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
-        showSnackBar(context, 'Password is weak');
-      }
-      else if (e.code == 'email-already-in-use') {
-        showSnackBar(
-          context,
-          'The account already exists for that email',
-        );
+        showToast(msg: 'Password is weak');
+      } else if (e.code == 'email-already-in-use') {
+showToast(msg: 'The account already exists for that email');
       }
     } catch (err) {
       res = err.toString();
@@ -61,7 +109,7 @@ class AuthMethods {
     return res;
   }
 
-//----------------------------------------------
+//-----------------------------------------------------------------------
   Future<void> loginUser({
     required BuildContext context,
     required String email,
@@ -73,16 +121,33 @@ class AuthMethods {
         email: email,
         password: password,
       );
-      showSnackBar(context, 'Logged in Successfully');
+      showToast(msg: 'logged in Successfully');
       Navigator.pushReplacementNamed(context, HomePage.id);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
-        showSnackBar(context, 'No user found for that email.');
+        showToast(msg: 'No user found for that email');
         // print('No user found for that email.');
       } else if (e.code == 'wrong-password') {
-        showSnackBar(context, 'Wrong password provided for that user.');
+        showToast(msg: 'Wrong password provided for that user');
         // print('Wrong password provided for that user.');
       }
     }
   }
+
+//-----------------------------------------------------------------------
+  Future<void> anonymousUser() async {
+    try {
+      final userCredential = await FirebaseAuth.instance.signInAnonymously();
+      print("Signed in with temporary account.");
+    } on FirebaseAuthException catch (e) {
+      switch (e.code) {
+        case "operation-not-allowed":
+          print("Anonymous auth hasn't been enabled for this project.");
+          break;
+        default:
+          print("Unknown error.");
+      }
+    }
+  }
+//-----------------------------------------------------------------------
 }

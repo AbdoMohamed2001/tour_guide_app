@@ -1,20 +1,18 @@
+// ignore_for_file: must_be_immutable
+
 import 'package:TourGuideApp/components.dart';
 import 'package:TourGuideApp/constants.dart';
+import 'package:TourGuideApp/screens/best_places/photo_view_page.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class CinemaScreen extends StatefulWidget {
-
-  CinemaScreen({
-    Key? key,
-    required this.placeData,
-    required this.currentIndex
-  }
-      ) : super(key: key);
+  CinemaScreen({Key? key, required this.placeData, required this.currentIndex,})
+      : super(key: key);
   List<QueryDocumentSnapshot> placeData;
   int currentIndex;
 
@@ -23,25 +21,12 @@ class CinemaScreen extends StatefulWidget {
 }
 
 class _CinemaScreenState extends State<CinemaScreen> {
-  late String imageUrl;
   final storage = FirebaseStorage.instance;
   final dataKey = new GlobalKey();
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    imageUrl='';
-    getImageUrl();
-  }
-  Future<void> getImageUrl() async {
-    final ref = storage.ref().child('/cairo/places/Abdeen palace/IMG_4329.jpeg');
-    final url = await ref.getDownloadURL();
-    setState(() {
-      imageUrl=url;
-    });
-  }
+
   @override
   Widget build(BuildContext context) {
+    var cinema = widget.placeData[widget.currentIndex];
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(-0.5),
@@ -58,20 +43,22 @@ class _CinemaScreenState extends State<CinemaScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              //------------------------------------------------------------------------
               //Image
               CustomImage(
                 dataKey: dataKey,
-                imagesLength: widget.placeData.length.toString(),
+                imagesLength: '${cinema['images'].length}',
                 fontSize: 28,
-                imageUrl: widget.placeData[widget.currentIndex]['Imageurl'],
-                endImageUrl:widget.placeData[widget.currentIndex]['images'][0],
-                itemName: widget.placeData[widget.currentIndex]['Name'],
-                itemLocation: widget.placeData[widget.currentIndex]['cityName'],
+                imageUrl: cinema['imageUrl'],
+                endImageUrl: cinema['images'][0],
+                itemName: cinema['name'],
+                itemLocation: cinema['cityName'],
               ),
               kSizedBox,
+              //------------------------------------------------------------------------
               //location and googleMaps
               Padding(
-                padding: const EdgeInsets.only(right: 8.0),
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -79,7 +66,7 @@ class _CinemaScreenState extends State<CinemaScreen> {
                     Container(
                       width: 250,
                       child: Text(
-                        widget.placeData[widget.currentIndex]['Address'],
+                        cinema['address'],
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
@@ -88,50 +75,29 @@ class _CinemaScreenState extends State<CinemaScreen> {
                     ),
                     //google map
                     GestureDetector(
-                      onTap: ()async {
-                        var url = Uri.parse(widget.placeData[widget.currentIndex]['mapUrl']
-                        );
-                        if (await canLaunchUrl(url,)) {
+                      onTap: () async {
+                        var url = Uri.parse(cinema['mapUrl']);
+                        if (await canLaunchUrl(
+                          url,
+                        )) {
                           await launchUrl(url);
-                        };
+                        }
+                        ;
                       },
                       child: Container(
-                        child: Image.asset('assets/images/googlemaps.png',
+                        child: Image.asset(
+                          'assets/images/googlemaps.png',
                           width: 50,
                           height: 50,
-
                         ),
                       ),
                     ),
                   ],
                 ),
               ),
-              // Padding(
-              //   padding: const EdgeInsets.only(right: 8.0),
-              //   child: Row(
-              //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              //     children: [
-              //       Column(
-              //         crossAxisAlignment: CrossAxisAlignment.start,
-              //         children: [
-              //           Container(
-              //             width : 220,
-              //             child: Text(
-              //               widget.placeData[widget.currentIndex]['Address'],
-              //               maxLines: 2,
-              //               overflow: TextOverflow.ellipsis,
-              //               style: TextStyle(
-              //                 fontSize: 14,
-              //                 fontWeight: FontWeight.bold,
-              //               ),
-              //             ),
-              //           ),
-              //         ],
-              //       ),
-              //     ],
-              //   ),
-              // ),
-              SizedBox(height: 15,),
+              SizedBox(
+                height: 15,
+              ),
               Divider(
                 height: 0.5,
                 thickness: 1,
@@ -140,148 +106,99 @@ class _CinemaScreenState extends State<CinemaScreen> {
                 color: Colors.grey[300],
               ),
               kSizedBox,
-              //Description and rate
-              Padding(
-                padding: const EdgeInsets.only(right: 10.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('Description',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20,
-                      ),
-                    ),
-                    Container(
-                      width: 100,
-                      height: 30,
-                      decoration: BoxDecoration(
-                        color: Colors.white54,
-                        borderRadius: BorderRadius.all(Radius.circular(10),),
-                      ),
-                      child: Center(
-                        // child: Row(
-                        //   mainAxisAlignment: MainAxisAlignment.center,
-                        //   children: [
-                        //     Text(
-                        //       '${widget.placeData[widget.currentIndex]['Rate']}',
-                        //       style: TextStyle(
-                        //         fontWeight: FontWeight.bold,
-                        //       ),
-                        //     ),
-                        //     SizedBox(width: 5,),
-                        //     Text('Ratings'),
-                        //   ],
-                        // ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              kSizedBox,
+              //-------------------------------------------------------------------------
               //Opening hours
               Row(
+
                 children: [
-                  Image.asset('assets/images/open.png',
-                    width: 100,
-                    height: 100,
+                  Image.asset(
+                    'assets/images/tickets.png',
+                    width: 90,
+                    height: 90,
+                  ),
+                  SizedBox(
+                    width: 50,
                   ),
                   Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        children: [
-                          Text('From:  ',
-                            style: TextStyle(
-                              fontSize: 18,
-                            ),
-                          ),
-                          Text('06:00 AM',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Text('To:       ',
-                            style: TextStyle(
-                              fontSize: 18,
-                            ),
-
-                          ),
-                          Text('06:00 PM',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                            ),
-
-                          ),
-                        ],
+                      Text('Ticket Price',),
+                      Text(
+                        cinema['tickets'],
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ],
                   ),
-
                 ],
               ),
-              SizedBox(height: 10,),
+              kSizedBox,
+              Divider(
+                height: 0.5,
+                thickness: 1,
+                indent: 30,
+                endIndent: 30,
+                color: Colors.grey[300],
+              ),
+
+              //-------------------------------------------------------------------------
               //Images
-              Text('Images',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 22,
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Text(
+                  'Images',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 22,
+                  ),
                 ),
               ),
               kSizedBox,
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  //image 1
-                  GestureDetector(
-                    onTap: (){},
-                    child: Container(
-                      key: dataKey,
-                      child:
-                      widget.placeData[widget.currentIndex]['images'][0].toString().isEmpty ?
-                      Text(''):
-                      Image.network(widget.placeData[widget.currentIndex]['images'][0],
-                        width: 150,
-                        height: 200,
-                        fit: BoxFit.cover,
+              GridView.builder(
+                key: dataKey,
+                shrinkWrap: true,
+                physics: const BouncingScrollPhysics(
+                  parent: AlwaysScrollableScrollPhysics(),
+                ),
+                padding: const EdgeInsets.all(1),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                ),
+                itemBuilder: (context, index) {
+                  return Container(
+                    padding: const EdgeInsets.all(0.5),
+                    child: InkWell(
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => PhotoViewPage(
+                              photos: cinema['images'], index: index),
+                        ),
                       ),
-
-                    ),
-                  ),
-                  //image 2
-                  GestureDetector(
-                    onTap: (){
-                      Navigator.push(context, MaterialPageRoute(builder: (context){
-                        return DetailScreen(placeData: widget.placeData, currentIndex: widget.currentIndex);
-                      }));
-                    },
-                    child: Container(
-                      child:
-                      widget.placeData[widget.currentIndex]['images'].length == 1 ?
-                      Text(''):
-
-                      Image.network(widget.placeData[widget.currentIndex]['images'][1],
-                        width: 150,
-                        height: 200,
-                        fit: BoxFit.cover,
+                      child: Hero(
+                        tag: cinema['images'][index],
+                        child: CachedNetworkImage(
+                          imageUrl: cinema['images'][index],
+                          fit: BoxFit.cover,
+                          placeholder: (context, url) =>
+                              Container(color: Colors.grey),
+                          errorWidget: (context, url, error) => Container(
+                            color: Colors.red.shade400,
+                          ),
+                        ),
                       ),
-
                     ),
-                  ),
-                ],
+                  );
+                },
+                itemCount: cinema['images'].length,
               ),
               kSizedBox,
+              //-------------------------------------------------------------------------
             ],
           ),
         ),
       ),
-
     );
   }
 }
@@ -291,19 +208,23 @@ class DetailScreen extends StatelessWidget {
     Key? key,
     required this.placeData,
     required this.currentIndex,
+    required this.ImageIndex,
   }) : super(key: key);
 
   List<QueryDocumentSnapshot> placeData;
   int currentIndex;
+  int ImageIndex;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          onPressed: (){
+          onPressed: () {
             Navigator.pop(context);
           },
-          icon: Icon(Icons.arrow_back_ios_new_rounded,
+          icon: Icon(
+            Icons.arrow_back_ios_new_rounded,
             color: Colors.black,
           ),
         ),
@@ -315,7 +236,7 @@ class DetailScreen extends StatelessWidget {
           child: Hero(
             tag: 'imageHero',
             child: Image.network(
-              placeData[currentIndex]['images'][1],
+              placeData[currentIndex]['images'][ImageIndex],
               fit: BoxFit.cover,
             ),
           ),

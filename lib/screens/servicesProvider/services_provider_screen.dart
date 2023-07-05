@@ -1,5 +1,4 @@
 import 'package:TourGuideApp/screens/servicesProvider/hotels/all_hotels_screen.dart';
-import 'package:TourGuideApp/screens/servicesProvider/mosques/mosque_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 

@@ -1,3 +1,4 @@
+
 import 'package:TourGuideApp/components.dart';
 import 'package:TourGuideApp/constants.dart';
 import 'package:TourGuideApp/resources/auth_methods.dart';
@@ -27,6 +28,22 @@ class _RegisterPageState extends State<RegisterPage> {
   TextEditingController _passwordController = TextEditingController();
   TextEditingController _confirmPasswordController = TextEditingController();
   Uint8List? _image;
+   late ByteData imageData;
+  Future<Uint8List> convert() async {
+    final ByteData bytes = await rootBundle.load('assets/images/user.png');
+    final Uint8List list = bytes.buffer.asUint8List();
+    return list;
+  }
+  Future<Uint8List?>  defaultImage() async{
+      Uint8List defaultImage = await convert();
+      return defaultImage;
+    }
+  @override
+  void initState() {
+    super.initState();
+    rootBundle.load('assets/images/user.png')
+        .then((data) => setState(() => this.imageData = data));
+  }
   @override
   void dispose() {
     super.dispose();
@@ -35,7 +52,6 @@ class _RegisterPageState extends State<RegisterPage> {
     _passwordController.dispose();
     _confirmPasswordController.dispose();
   }
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -67,6 +83,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     const SizedBox(
                       height: 80,
                     ),
+                    //-----------------Image--------------------------
                     Stack(
                       children: [
                         _image != null ?
@@ -79,9 +96,9 @@ class _RegisterPageState extends State<RegisterPage> {
                         :
                         CircleAvatar(
                           backgroundColor: Colors.white10,
-                          radius: 64,
+                          radius: 60,
                           backgroundImage:
-                          NetworkImage('https://e7.pngegg.com/pngimages/178/595/png-clipart-user-profile-computer-icons-login-user-avatars-monochrome-black.png',),
+                          NetworkImage('https://static.vecteezy.com/system/resources/previews/005/544/718/original/profile-icon-design-free-vector.jpg',),
                         ),
                         Positioned(
                           bottom: -10,
@@ -89,7 +106,6 @@ class _RegisterPageState extends State<RegisterPage> {
                           child: IconButton(
                             onPressed: () {
                               selectImage();
-
                             },
                             icon: Icon(
                               Icons.add_a_photo,
@@ -128,7 +144,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       obscureText: false,
                       validator: (value) {
                         if (value!.isEmpty ||
-                            !RegExp(r'^([a-z\d_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,63})$')
+                            !RegExp(r'^([a-z\d_.-]+)@([\da-z.-]+)\.([a-z.]{2,63})$')
                                 .hasMatch(value)) {
                           return 'Enter correct Email';
                         }
@@ -149,10 +165,9 @@ class _RegisterPageState extends State<RegisterPage> {
                       obscureText: true,
                       validator: (value) {
                         if (value!.isEmpty ||
-                            !RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?\d).{8,}$')
+                            !RegExp(r'^.{8,}$')
                                 .hasMatch(value)) {
-                          return 'Password must be at least 8 characters '
-                              'with 1 upper case letter and 1 number ';
+                          return 'Password must be at least 8 characters ';
                         }
                         passwordValue = value;
                         return null;
@@ -188,10 +203,15 @@ class _RegisterPageState extends State<RegisterPage> {
                       onTap: () async {
                         if (registerFormKey.currentState!.validate()) {
                           isLoading = true;
+                          if(_image == null){
+                            setState(() {
+                              _image =  imageData.buffer.asUint8List();
+                            });
+                          }
                           setState(() {});
                           await AuthMethods().signUpUser(
                             context: context,
-                            file: _image!,
+                            file: _image! ,
                             email: _emailController.text,
                             password: _passwordController.text,
                             userName: _userNameController.text,
